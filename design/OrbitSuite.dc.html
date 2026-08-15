@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @font-face { font-family: 'Geist'; src: url('https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.0.3/files/geist-sans-latin-400-normal.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face { font-family: 'Geist'; src: url('https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.0.3/files/geist-sans-latin-500-normal.woff2') format('woff2'); font-weight:500; font-display:swap; }
+  @font-face { font-family: 'Geist'; src: url('https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.0.3/files/geist-sans-latin-600-normal.woff2') format('woff2'); font-weight:600; font-display:swap; }
+  @font-face { font-family: 'Geist'; src: url('https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.0.3/files/geist-sans-latin-700-normal.woff2') format('woff2'); font-weight:700; font-display:swap; }
+  body { margin:0; }
+  :root { --surface:#ffffff; --page-bg:#f8fafc; --text:#0f172a; --text-muted:#64748b; --text-soft:#334155; --border:#e2e8f0; --border-soft:#f1f5f9; --scrim-light:rgba(255,255,255,0.65); --scrim-strong:rgba(255,255,255,0.92); --glass-border:rgba(255,255,255,0.6); }
+  .dark { --surface:#1e293b; --page-bg:#0f172a; --text:#f1f5f9; --text-muted:#94a3b8; --text-soft:#cbd5e1; --border:#334155; --border-soft:#334155; --scrim-light:rgba(15,23,42,0.55); --scrim-strong:rgba(30,41,59,0.92); --glass-border:rgba(148,163,184,0.25); background:var(--page-bg); animation:none; }
+  .dark input, .dark select, .dark textarea { background:#0f172a; }
+  a { color:#E37434; text-decoration:none; }
+  a:hover { color:#B85A24; text-decoration:underline; }
+  input:focus, select:focus, textarea:focus { border-color:#E37434 !important; box-shadow:0 0 0 3px rgba(251,108,0,0.15); }
+  ::placeholder { color:#94a3b8; }
+  button { font-family:inherit; }
+  @keyframes bgMove { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+  .bg-anim { background:linear-gradient(120deg,#FCF2E5,#FCF2E5,#F6CBA8,#A9D8D6,#FCF2E5); background-size:400% 400%; animation:bgMove 22s ease-in-out infinite; }
+  @keyframes cubeSpin { from { transform:rotateX(0deg) rotateY(0deg); } to { transform:rotateX(360deg) rotateY(360deg); } }
+  .cube-scene { width:110px; height:110px; perspective:600px; margin:0 auto 20px; }
+  .cube { width:100%; height:100%; position:relative; transform-style:preserve-3d; animation:cubeSpin 12s linear infinite; }
+  .cube-face { position:absolute; width:110px; height:110px; border:1px solid rgba(255,255,255,0.5); border-radius:6px; opacity:0.94; }
+  .cube-face.f-front { background:#E37434; transform:translateZ(55px); }
+  .cube-face.f-back { background:#007979; transform:rotateY(180deg) translateZ(55px); }
+  .cube-face.f-right { background:#F6CBA8; transform:rotateY(90deg) translateZ(55px); }
+  .cube-face.f-left { background:#A9D8D6; transform:rotateY(-90deg) translateZ(55px); }
+  .cube-face.f-top { background:#FCF2E5; transform:rotateX(90deg) translateZ(55px); }
+  .cube-face.f-bottom { background:#0f172a; transform:rotateX(-90deg) translateZ(55px); }
+</style>
+</helmet>
+<div class="{{ rootClass }}" style="min-height:100vh;font-family:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;color:var(--text)">
+
+<sc-if value="{{ showPublicShell }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;display:flex;flex-direction:column">
+  <div style="position:sticky;top:16px;z-index:100;margin:16px 24px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;background:var(--scrim-light);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-radius:9999px;border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(15,23,42,0.14), inset 0 1px 0 rgba(255,255,255,0.5)">
+    <div style="font-size:18px;font-weight:700;letter-spacing:-0.01em;cursor:pointer" onClick="{{ goLanding }}">OrbitSuite</div>
+    <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onClick="{{ toggleDarkMode }}" title="Toggle dark mode" style="background:none;border:1px solid var(--border);color:var(--text-soft);border-radius:6px;width:32px;height:32px;cursor:pointer;font-size:14px">{{ darkModeIcon }}</button>
+        <button onClick="{{ goAbout }}" style="background:none;border:none;color:var(--text-soft);font-size:14px;font-weight:500;cursor:pointer;padding:8px 12px">About</button>
+        <button onClick="{{ goContact }}" style="background:none;border:none;color:var(--text-soft);font-size:14px;font-weight:500;cursor:pointer;padding:8px 12px">Contact</button>
+        <button onClick="{{ goLogin }}" style="background:none;border:none;color:var(--text-soft);font-size:14px;font-weight:500;cursor:pointer;padding:8px 12px">Log in</button>
+        <button onClick="{{ goRegister }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:14px;font-weight:500;cursor:pointer">Get started</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onClick="{{ toggleDarkMode }}" title="Toggle dark mode" style="background:none;border:1px solid var(--border);color:var(--text-soft);border-radius:6px;width:32px;height:32px;cursor:pointer;font-size:14px">{{ darkModeIcon }}</button>
+        <button onClick="{{ goContact }}" style="background:none;border:none;color:var(--text-soft);font-size:14px;font-weight:500;cursor:pointer;padding:8px 12px">Contact</button>
+        <button onClick="{{ goLogin }}" style="background:none;border:none;color:var(--text-soft);font-size:14px;font-weight:500;cursor:pointer;padding:8px 12px">Log in</button>
+        <button onClick="{{ goRegister }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:14px;font-weight:500;cursor:pointer">Get started</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onClick="{{ toggleDarkMode }}" title="Toggle dark mode" style="background:none;border:1px solid var(--border);color:var(--text-soft);border-radius:6px;width:32px;height:32px;cursor:pointer;font-size:14px">{{ darkModeIcon }}</button>
+        <button onClick="{{ goAbout }}" style="background:none;border:none;color:var(--text-soft);font-size:14px;font-weight:500;cursor:pointer;padding:8px 12px">About</button>
+        <button onClick="{{ goLogin }}" style="background:none;border:none;color:var(--text-soft);font-size:14px;font-weight:500;cursor:pointer;padding:8px 12px">Log in</button>
+        <button onClick="{{ goRegister }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:14px;font-weight:500;cursor:pointer">Get started</button>
+      </div>
+    </sc-if>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px 110px">
+
+    <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+      <div style="max-width:880px;width:100%">
+        <div style="text-align:center;margin-bottom:48px;background:var(--scrim-strong);border-radius:16px;padding:48px 32px;box-shadow:0 8px 24px rgba(15,23,42,0.08)">
+          <div class="cube-scene"><div class="cube">
+            <div class="cube-face f-front"></div><div class="cube-face f-back"></div>
+            <div class="cube-face f-right"></div><div class="cube-face f-left"></div>
+            <div class="cube-face f-top"></div><div class="cube-face f-bottom"></div>
+          </div></div>
+          <h1 style="font-size:44px;font-weight:800;letter-spacing:-0.03em;margin:0 0 12px;text-wrap:balance;line-height:1.1">Bill smarter. Grow <span style="color:#E37434">faster</span>.</h1>
+          <p style="font-size:17px;color:var(--text-muted);margin:0 auto 24px;max-width:560px;line-height:1.5">One control plane for organizations, billing, and access — built to keep your team <span style="color:#E37434;font-weight:600">moving</span>, not managing spreadsheets.</p>
+          <div style="display:flex;gap:12px;justify-content:center">
+            <button onClick="{{ goRegister }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:12px 20px;font-size:15px;font-weight:500;cursor:pointer">Get started</button>
+            <button onClick="{{ goLogin }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:12px 20px;font-size:15px;font-weight:500;cursor:pointer">Log in</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:56px">
+          <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em"><span style="color:#E37434">Move faster</span>, not slower</div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Give every team a single place to manage billing, so nothing falls through the cracks.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em">Built for <span style="color:#E37434">accountability</span></div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Role-based access and a clear audit trail mean every action has an owner.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em">Teams, <span style="color:#E37434">managed effortlessly</span></div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Invite, promote, and remove members in a few clicks — no spreadsheets required.</div>
+          </div>
+        </div>
+        <div style="margin-bottom:56px">
+          <h2 style="font-size:20px;font-weight:600;text-align:center;margin:0 0 24px;display:table;margin-left:auto;margin-right:auto;background:var(--scrim-strong);padding:8px 20px;border-radius:8px">What OrbitSuite handles for you</h2>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center">
+            <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+              <div style="font-size:15px;font-weight:700;margin-bottom:8px">Subscription billing</div>
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Plans, upgrades, downgrades, and cancellations — synced with Stripe end to end.</div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+              <div style="font-size:15px;font-weight:700;margin-bottom:8px">Multi-tenant access</div>
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Every organization sees only its own data — enforced server-side, not just hidden in the UI.</div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+              <div style="font-size:15px;font-weight:700;margin-bottom:8px">Revenue reporting</div>
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Payments, transactions, and MRR by plan — always in view for the platform team.</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center">
+          <sc-for list="{{ publicPlanCards }}" as="p" hint-placeholder-count="3">
+            <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:4px">{{ p.name }}</div>
+              <div style="font-size:28px;font-weight:700;margin-bottom:16px;font-variant-numeric:tabular-nums">{{ p.price }}<span style="font-size:13px;font-weight:400;color:var(--text-muted)">/mo</span></div>
+              <sc-for list="{{ p.features }}" as="f" hint-placeholder-count="3">
+                <div style="font-size:13px;color:var(--text-soft);margin-bottom:8px;display:flex;gap:8px"><span style="color:#E37434">✓</span><span>{{ f }}</span></div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="margin-top:56px">
+          <h2 style="font-size:22px;font-weight:700;text-align:center;letter-spacing:-0.01em;margin:0 0 24px;display:table;margin-left:auto;margin-right:auto;background:var(--scrim-strong);padding:8px 20px;border-radius:8px">Trusted by teams built to <span style="color:#E37434">win</span></h2>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center">
+            <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+              <p style="font-size:13px;color:var(--text-soft);line-height:1.6;margin:0 0 16px">"We moved four tenants over in an afternoon. Suspend and reactivate alone saved our support team hours every week."</p>
+              <div style="font-size:13px;font-weight:600">Priya Shah</div>
+              <div style="font-size:12px;color:var(--text-muted)">Ops Lead, Acme Corp</div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+              <p style="font-size:13px;color:var(--text-soft);line-height:1.6;margin:0 0 16px">"The billing history and role controls are exactly what we needed — nothing extra to configure."</p>
+              <div style="font-size:13px;font-weight:600">Theo Brandt</div>
+              <div style="font-size:12px;color:var(--text-muted)">IT Manager, Globex Inc</div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:220px;max-width:280px">
+              <p style="font-size:13px;color:var(--text-soft);line-height:1.6;margin:0 0 16px">"Clear statuses everywhere. My finance team can finally tell a refund from a rollback at a glance."</p>
+              <div style="font-size:13px;font-weight:600">Nora Kimura</div>
+              <div style="font-size:12px;color:var(--text-muted)">Finance Director, Globex Inc</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:56px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;text-align:center;background:var(--scrim-strong);border-radius:16px;padding:32px 24px">
+          <div><div style="font-size:32px;font-weight:800;color:#E37434">120+</div><div style="font-size:13px;color:var(--text-muted);margin-top:4px">Organizations onboarded</div></div>
+          <div><div style="font-size:32px;font-weight:800;color:#E37434">15,000+</div><div style="font-size:13px;color:var(--text-muted);margin-top:4px">Members managed</div></div>
+          <div><div style="font-size:32px;font-weight:800;color:#E37434">$2.4M+</div><div style="font-size:13px;color:var(--text-muted);margin-top:4px">Processed securely</div></div>
+          <div><div style="font-size:32px;font-weight:800;color:#E37434">99.9%</div><div style="font-size:13px;color:var(--text-muted);margin-top:4px">Uptime</div></div>
+        </div>
+        <div style="margin-top:56px;text-align:center;padding:40px 24px;border:1px solid var(--border);border-radius:8px;background:var(--surface)">
+          <h2 style="font-size:20px;font-weight:700;letter-spacing:-0.01em;margin:0 0 8px">Get product updates in your inbox</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">One email a month. No spam, unsubscribe any time.</p>
+          <form onSubmit="{{ submitNewsletter }}" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:400px;margin:0 auto">
+            <input type="email" value="{{ newsletterEmail }}" onChange="{{ onNewsletterEmailChange }}" placeholder="you@company.com" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;flex:1;min-width:200px;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 18px;font-size:14px;font-weight:500;cursor:pointer">Subscribe</button>
+          </form>
+        </div>
+        <div style="text-align:center;margin-top:56px;padding:40px 24px;border:1px solid var(--border);border-radius:8px;background:var(--surface)">
+          <h2 style="font-size:28px;font-weight:800;letter-spacing:-0.02em;margin:0 0 8px">Ready to <span style="color:#E37434">accelerate</span> your growth?</h2>
+          <p style="font-size:14px;color:var(--text-muted);margin:0 0 20px">Set up your organization in minutes — no credit card required to start.</p>
+          <button onClick="{{ goRegister }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:12px 22px;font-size:15px;font-weight:500;cursor:pointer">Get started</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:720px;width:100%">
+        <div style="text-align:center;margin-bottom:40px;background:var(--scrim-strong);border-radius:16px;padding:40px 32px;box-shadow:0 8px 24px rgba(15,23,42,0.08)">
+          <h1 style="font-size:36px;font-weight:800;letter-spacing:-0.02em;margin:0 0 12px">Built for teams that <span style="color:#E37434">bill teams</span></h1>
+          <p style="font-size:16px;color:var(--text-muted);margin:0 auto;max-width:520px;line-height:1.6">OrbitSuite is subscription infrastructure for multi-tenant SaaS — the control plane behind organizations, billing, and access, so founders can spend their time on product, not plumbing.</p>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:40px">
+          <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:200px;max-width:280px">
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px">Our mission</div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Give every SaaS team billing and tenancy infrastructure that just works, so they can focus on what makes their product different.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:200px;max-width:280px">
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px">How we work</div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Restraint over flash. Clear status, clean data, and access control that's enforced server-side — never just a convenience.</div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:8px;padding:24px;background:var(--surface);flex:1;min-width:200px;max-width:280px">
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px">Where we're headed</div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Every release is scoped tightly, shipped reliably — the same discipline we help our customers run their own billing with.</div>
+          </div>
+        </div>
+        <div style="text-align:center">
+          <button onClick="{{ goRegister }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:12px 22px;font-size:15px;font-weight:500;cursor:pointer">Get started</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:440px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:32px">
+        <sc-if value="{{ contactSubmitted }}" hint-placeholder-val="{{ false }}">
+          <h1 style="font-size:18px;font-weight:600;margin:0 0 8px">Message sent</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">Thanks for reaching out — we'll get back to you within a business day.</p>
+          <button onClick="{{ goLanding }}" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Back to home</button>
+        </sc-if>
+        <sc-if value="{{ contactNotSubmitted }}" hint-placeholder-val="{{ true }}">
+          <h1 style="font-size:20px;font-weight:600;margin:0 0 4px">Get in touch</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 24px">Questions about plans or a demo? We'd love to hear from you.</p>
+          <form onSubmit="{{ submitContact }}">
+            <div style="margin-bottom:14px">
+              <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Name</label>
+              <input type="text" value="{{ contactName }}" onChange="{{ onContactNameChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+              <sc-if value="{{ contactErrors.name }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ contactErrors.name }}</div></sc-if>
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Email</label>
+              <input type="email" value="{{ contactEmail }}" onChange="{{ onContactEmailChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+              <sc-if value="{{ contactErrors.email }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ contactErrors.email }}</div></sc-if>
+            </div>
+            <div style="margin-bottom:20px">
+              <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Message</label>
+              <textarea value="{{ contactMessage }}" onChange="{{ onContactMessageChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit;min-height:100px;resize:vertical"></textarea>
+              <sc-if value="{{ contactErrors.message }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ contactErrors.message }}</div></sc-if>
+            </div>
+            <button type="submit" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Send message</button>
+          </form>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:380px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:32px">
+        <h1 style="font-size:20px;font-weight:600;margin:0 0 4px">Log in</h1>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 24px">Welcome back to OrbitSuite.</p>
+        <form onSubmit="{{ submitLogin }}">
+          <div style="margin-bottom:16px">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Email</label>
+            <input type="email" value="{{ loginEmail }}" onChange="{{ onLoginEmailChange }}" placeholder="you@company.com" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+          </div>
+          <div style="margin-bottom:8px">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Password</label>
+            <input type="password" value="{{ loginPassword }}" onChange="{{ onLoginPasswordChange }}" placeholder="••••••••" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+          </div>
+          <div style="text-align:right;margin-bottom:16px">
+            <a href="#" onClick="{{ goForgotPrevent }}" style="font-size:12px">Forgot password?</a>
+          </div>
+          <sc-if value="{{ hasLoginError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;color:#dc2626;margin-bottom:12px">{{ loginError }}</div>
+          </sc-if>
+          <button type="submit" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Log in</button>
+        </form>
+        <div style="margin-top:16px;font-size:13px;color:var(--text-muted);text-align:center">No account? <a href="#" onClick="{{ goRegisterPrevent }}">Create one</a></div>
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border-soft)">
+          <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Quick sign-in (demo)</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ demoAccounts }}" as="acc" hint-placeholder-count="5">
+              <button onClick="{{ acc.onClick }}" style="text-align:left;background:var(--page-bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--text-soft);cursor:pointer">{{ acc.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isRegister }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:460px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:32px">
+        <h1 style="font-size:20px;font-weight:600;margin:0 0 4px">Create your organization</h1>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 24px">You'll set up billing on the next step.</p>
+        <form onSubmit="{{ submitRegister }}">
+          <div style="margin-bottom:14px">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Organization name</label>
+            <input type="text" value="{{ registerOrgName }}" onChange="{{ onRegisterOrgNameChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <sc-if value="{{ registerErrors.orgName }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ registerErrors.orgName }}</div></sc-if>
+          </div>
+          <div style="margin-bottom:14px">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Your name</label>
+            <input type="text" value="{{ registerName }}" onChange="{{ onRegisterNameChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <sc-if value="{{ registerErrors.name }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ registerErrors.name }}</div></sc-if>
+          </div>
+          <div style="margin-bottom:14px">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Email</label>
+            <input type="email" value="{{ registerEmail }}" onChange="{{ onRegisterEmailChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <sc-if value="{{ registerErrors.email }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ registerErrors.email }}</div></sc-if>
+          </div>
+          <div style="margin-bottom:16px">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Password</label>
+            <input type="password" value="{{ registerPassword }}" onChange="{{ onRegisterPasswordChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">At least 8 characters, with upper, lower and a number.</div>
+            <sc-if value="{{ registerErrors.password }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ registerErrors.password }}</div></sc-if>
+          </div>
+          <div style="margin-bottom:20px">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Plan</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <sc-for list="{{ registerPlanCards }}" as="pc" hint-placeholder-count="3">
+                <div onClick="{{ pc.onClick }}" style="{{ pc.cardStyle }}">
+                  <div style="font-size:13px;font-weight:600">{{ pc.name }}</div>
+                  <div style="font-size:16px;font-weight:700;font-variant-numeric:tabular-nums">{{ pc.price }}<span style="font-size:11px;font-weight:400;color:var(--text-muted)">/mo</span></div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ registerErrors.planId }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ registerErrors.planId }}</div></sc-if>
+          </div>
+          <button type="submit" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Continue to checkout</button>
+        </form>
+        <div style="margin-top:16px;font-size:13px;color:var(--text-muted);text-align:center">Already have an account? <a href="#" onClick="{{ goLoginPrevent }}">Log in</a></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isForgot }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:380px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:32px">
+        <sc-if value="{{ forgotSubmitted }}" hint-placeholder-val="{{ false }}">
+          <h1 style="font-size:18px;font-weight:600;margin:0 0 8px">Check your email</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">If an account exists for that address, we've sent a password reset link.</p>
+          <button onClick="{{ goLogin }}" style="width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Back to log in</button>
+        </sc-if>
+        <sc-if value="{{ forgotNotSubmitted }}" hint-placeholder-val="{{ true }}">
+          <h1 style="font-size:18px;font-weight:600;margin:0 0 4px">Forgot password</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">Enter your email and we'll send a reset link.</p>
+          <form onSubmit="{{ submitForgot }}">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Email</label>
+            <input type="email" value="{{ forgotEmail }}" onChange="{{ onForgotEmailChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <button type="submit" style="width:100%;margin-top:16px;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Send reset link</button>
+          </form>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isReset }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:380px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:32px">
+        <sc-if value="{{ resetSubmitted }}" hint-placeholder-val="{{ false }}">
+          <h1 style="font-size:18px;font-weight:600;margin:0 0 8px">Password reset</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">Your password has been updated. Log in with your new password.</p>
+          <button onClick="{{ goLogin }}" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Back to log in</button>
+        </sc-if>
+        <sc-if value="{{ resetNotSubmitted }}" hint-placeholder-val="{{ true }}">
+          <h1 style="font-size:18px;font-weight:600;margin:0 0 4px">Reset your password</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">Choose a new password for your account.</p>
+          <form onSubmit="{{ submitReset }}">
+            <div style="margin-bottom:14px">
+              <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">New password</label>
+              <input type="password" value="{{ resetPassword }}" onChange="{{ onResetPasswordChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+              <sc-if value="{{ resetErrors.password }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ resetErrors.password }}</div></sc-if>
+            </div>
+            <div style="margin-bottom:16px">
+              <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Confirm password</label>
+              <input type="password" value="{{ resetConfirm }}" onChange="{{ onResetConfirmChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+              <sc-if value="{{ resetErrors.confirm }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ resetErrors.confirm }}</div></sc-if>
+            </div>
+            <button type="submit" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Reset password</button>
+          </form>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAcceptInvite }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:380px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:32px">
+        <sc-if value="{{ inviteAcceptSubmitted }}" hint-placeholder-val="{{ false }}">
+          <h1 style="font-size:18px;font-weight:600;margin:0 0 8px">You're all set</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">Your password has been created. Log in to join your organization.</p>
+          <button onClick="{{ goLogin }}" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Go to log in</button>
+        </sc-if>
+        <sc-if value="{{ inviteAcceptNotSubmitted }}" hint-placeholder-val="{{ true }}">
+          <h1 style="font-size:18px;font-weight:600;margin:0 0 4px">Accept your invite</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">Set a password to join your team on OrbitSuite.</p>
+          <form onSubmit="{{ submitInviteAccept }}">
+            <div style="margin-bottom:14px">
+              <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Password</label>
+              <input type="password" value="{{ inviteAcceptPassword }}" onChange="{{ onInviteAcceptPasswordChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+              <sc-if value="{{ inviteAcceptErrors.password }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ inviteAcceptErrors.password }}</div></sc-if>
+            </div>
+            <div style="margin-bottom:16px">
+              <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Confirm password</label>
+              <input type="password" value="{{ inviteAcceptConfirm }}" onChange="{{ onInviteAcceptConfirmChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+              <sc-if value="{{ inviteAcceptErrors.confirm }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ inviteAcceptErrors.confirm }}</div></sc-if>
+            </div>
+            <button type="submit" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Set password</button>
+          </form>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isCheckoutPay }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:440px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:32px">
+        <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px">Step 2 of 2</div>
+        <h1 style="font-size:20px;font-weight:600;margin:0 0 4px">Confirm your subscription</h1>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px">Simulated Stripe Checkout — this is a prototype, no real payment is made.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--page-bg);border-radius:6px;margin-bottom:20px">
+          <div>
+            <div style="font-size:14px;font-weight:600">{{ pendingPlanName }} plan</div>
+            <div style="font-size:12px;color:var(--text-muted)">Billed monthly</div>
+          </div>
+          <div style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums">{{ pendingPlanPrice }}/mo</div>
+        </div>
+        <form onSubmit="{{ submitCheckoutPay }}">
+          <div style="margin-bottom:14px">
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Card number</label>
+            <input type="text" value="{{ cardNumber }}" onChange="{{ onCardNumberChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+          </div>
+          <div style="display:flex;gap:12px;margin-bottom:20px">
+            <div style="flex:1"><label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Expiry</label><input type="text" value="{{ cardExpiry }}" onChange="{{ onCardExpiryChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" /></div>
+            <div style="flex:1"><label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">CVC</label><input type="text" value="{{ cardCvc }}" onChange="{{ onCardCvcChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" /></div>
+          </div>
+          <button type="submit" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Pay {{ pendingPlanPrice }}/mo</button>
+        </form>
+        <div style="text-align:center;margin-top:14px">
+          <button onClick="{{ cancelCheckout }}" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer">Cancel and return</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isCheckoutSuccess }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:400px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:40px 32px;text-align:center">
+        <sc-if value="{{ checkoutConfirmed }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:32px;margin-bottom:12px;color:#047857">✓</div>
+          <h1 style="font-size:18px;font-weight:600;margin:0 0 8px">Payment confirmed</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin:0 0 24px">Your organization is now active.</p>
+          <button onClick="{{ continueAfterCheckout }}" style="width:100%;background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;box-sizing:border-box">Continue to OrbitSuite</button>
+        </sc-if>
+        <sc-if value="{{ checkoutNotConfirmed }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:14px;font-weight:600;margin-bottom:10px">Confirming your payment{{ checkoutDots }}</div>
+          <p style="font-size:12px;color:var(--text-muted);margin:0">We only activate your account once Stripe confirms payment by webhook — a redirect alone isn't proof of payment.</p>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isCheckoutCancel }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:400px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:40px 32px;text-align:center">
+        <h1 style="font-size:18px;font-weight:600;margin:0 0 8px">Checkout cancelled</h1>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 24px">No payment was made. You can pick up where you left off.</p>
+        <div style="display:flex;gap:12px;justify-content:center">
+          <button onClick="{{ retryCheckout }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Try again</button>
+          <button onClick="{{ logout }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Back to homepage</button>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+  <div style="border-top:1px solid var(--border);background:var(--surface);padding:40px 32px 24px">
+    <div style="max-width:1024px;margin:0 auto;display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap">
+      <div style="max-width:260px">
+        <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:8px">OrbitSuite</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Subscription infrastructure for multi-tenant SaaS.</div>
+      </div>
+      <div style="display:flex;gap:48px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px">Product</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="#" onClick="{{ goLanding }}" style="font-size:13px;color:var(--text-soft)">Pricing</a>
+            <a href="#" onClick="{{ goRegisterPrevent }}" style="font-size:13px;color:var(--text-soft)">Get started</a>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px">Company</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="#" onClick="{{ goAbout }}" style="font-size:13px;color:var(--text-soft)">About</a>
+            <a href="#" onClick="{{ goContact }}" style="font-size:13px;color:var(--text-soft)">Contact</a>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px">Account</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="#" onClick="{{ goLoginPrevent }}" style="font-size:13px;color:var(--text-soft)">Log in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:1024px;margin:32px auto 0;padding-top:16px;border-top:1px solid var(--border-soft);font-size:12px;color:#94a3b8;text-align:center">© 2026 OrbitSuite. All rights reserved.</div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showAppShell }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;min-height:100vh">
+  <div style="width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;padding:24px 16px;position:sticky;top:0;height:100vh;box-sizing:border-box">
+    <div>
+      <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;padding:0 12px;margin-bottom:2px">OrbitSuite</div>
+      <div style="font-size:11px;color:#94a3b8;padding:0 12px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em">{{ roleLabel }}</div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <sc-for list="{{ navItemsRendered }}" as="n" hint-placeholder-count="4">
+          <button onClick="{{ n.onClick }}" style="{{ n.style }}">{{ n.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border-soft);padding-top:16px">
+      <div style="font-size:13px;font-weight:500;padding:0 12px">{{ sessionName }}</div>
+      <div style="font-size:12px;color:var(--text-muted);padding:0 12px;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ sessionEmail }}</div>
+      <div style="display:flex;gap:8px;align-items:center;padding:0 12px;margin-bottom:8px">
+        <button onClick="{{ toggleDarkMode }}" title="Toggle dark mode" style="background:none;border:1px solid var(--border);color:var(--text-soft);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:13px">{{ darkModeIcon }}</button>
+        <span style="font-size:12px;color:var(--text-muted)">Dark mode</span>
+      </div>
+      <button onClick="{{ logout }}" style="width:100%;text-align:left;background:none;border:none;color:#475569;font-size:13px;cursor:pointer;padding:8px 12px;border-radius:6px;box-sizing:border-box">Log out</button>
+    </div>
+  </div>
+
+  <div style="flex:1;min-width:0">
+    <div style="max-width:1280px;margin:0 auto;padding:32px">
+
+      <sc-if value="{{ isAdminStats }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;letter-spacing:-0.01em;margin:0 0 24px">Overview</h1>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px">
+          <sc-for list="{{ statCards }}" as="c" hint-placeholder-count="5">
+            <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:20px">
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">{{ c.label }}</div>
+              <div style="font-size:24px;font-weight:700;font-variant-numeric:tabular-nums">{{ c.value }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px">
+            <h2 style="font-size:16px;font-weight:600;margin:0 0 16px">Recent signups</h2>
+            <sc-for list="{{ recentSignupsList }}" as="r" hint-placeholder-count="4">
+              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-soft);font-size:14px">
+                <span>{{ r.name }}</span>
+                <span style="color:var(--text-muted);font-size:12px">{{ r.relative }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px">
+            <h2 style="font-size:16px;font-weight:600;margin:0 0 16px">Subscribers by plan</h2>
+            <sc-for list="{{ byPlanList }}" as="b" hint-placeholder-count="3">
+              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-soft);font-size:14px">
+                <span>{{ b.planName }}</span>
+                <span style="font-variant-numeric:tabular-nums">{{ b.subscribers }} · {{ b.mrr }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isAdminOrgs }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Organizations</h1>
+        <dc-import name="DataTable" title="{{ orgsTable.title }}" has-action="{{ orgsTable.hasAction }}" action-label="{{ orgsTable.actionLabel }}" on-action="{{ orgsTable.onAction }}" searchable="{{ orgsTable.searchable }}" search-value="{{ orgsTable.searchValue }}" search-placeholder="{{ orgsTable.searchPlaceholder }}" on-search-change="{{ orgsTable.onSearchChange }}" has-filter="{{ orgsTable.hasFilter }}" filter-value="{{ orgsTable.filterValue }}" filter-options="{{ orgsTable.filterOptions }}" on-filter-change="{{ orgsTable.onFilterChange }}" demo-state-options="{{ orgsTable.demoStateOptions }}" columns="{{ orgsTable.columns }}" column-count="{{ orgsTable.columnCount }}" is-loaded="{{ orgsTable.isLoaded }}" rows="{{ orgsTable.rows }}" is-loading="{{ orgsTable.isLoading }}" skeleton-rows="{{ orgsTable.skeletonRows }}" is-error="{{ orgsTable.isError }}" on-retry="{{ orgsTable.onRetry }}" is-empty="{{ orgsTable.isEmpty }}" empty-title="{{ orgsTable.emptyTitle }}" empty-body="{{ orgsTable.emptyBody }}" has-empty-action="{{ orgsTable.hasEmptyAction }}" empty-action-label="{{ orgsTable.emptyActionLabel }}" on-empty-action="{{ orgsTable.onEmptyAction }}" pagination-label="{{ orgsTable.paginationLabel }}" prev-disabled="{{ orgsTable.prevDisabled }}" on-prev="{{ orgsTable.onPrev }}" next-disabled="{{ orgsTable.nextDisabled }}" on-next="{{ orgsTable.onNext }}" hint-size="100%,480px"></dc-import>
+      </sc-if>
+
+      <sc-if value="{{ isAdminPlans }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Plans</h1>
+        <dc-import name="DataTable" title="{{ plansTable.title }}" has-action="{{ plansTable.hasAction }}" action-label="{{ plansTable.actionLabel }}" on-action="{{ plansTable.onAction }}" searchable="{{ plansTable.searchable }}" search-value="{{ plansTable.searchValue }}" search-placeholder="{{ plansTable.searchPlaceholder }}" on-search-change="{{ plansTable.onSearchChange }}" has-filter="{{ plansTable.hasFilter }}" filter-value="{{ plansTable.filterValue }}" filter-options="{{ plansTable.filterOptions }}" on-filter-change="{{ plansTable.onFilterChange }}" demo-state-options="{{ plansTable.demoStateOptions }}" columns="{{ plansTable.columns }}" column-count="{{ plansTable.columnCount }}" is-loaded="{{ plansTable.isLoaded }}" rows="{{ plansTable.rows }}" is-loading="{{ plansTable.isLoading }}" skeleton-rows="{{ plansTable.skeletonRows }}" is-error="{{ plansTable.isError }}" on-retry="{{ plansTable.onRetry }}" is-empty="{{ plansTable.isEmpty }}" empty-title="{{ plansTable.emptyTitle }}" empty-body="{{ plansTable.emptyBody }}" has-empty-action="{{ plansTable.hasEmptyAction }}" empty-action-label="{{ plansTable.emptyActionLabel }}" on-empty-action="{{ plansTable.onEmptyAction }}" pagination-label="{{ plansTable.paginationLabel }}" prev-disabled="{{ plansTable.prevDisabled }}" on-prev="{{ plansTable.onPrev }}" next-disabled="{{ plansTable.nextDisabled }}" on-next="{{ plansTable.onNext }}" hint-size="100%,320px"></dc-import>
+      </sc-if>
+
+      <sc-if value="{{ isAdminTransactions }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Transactions</h1>
+        <dc-import name="DataTable" title="{{ adminTxTable.title }}" has-action="{{ adminTxTable.hasAction }}" action-label="{{ adminTxTable.actionLabel }}" on-action="{{ adminTxTable.onAction }}" searchable="{{ adminTxTable.searchable }}" search-value="{{ adminTxTable.searchValue }}" search-placeholder="{{ adminTxTable.searchPlaceholder }}" on-search-change="{{ adminTxTable.onSearchChange }}" has-filter="{{ adminTxTable.hasFilter }}" filter-value="{{ adminTxTable.filterValue }}" filter-options="{{ adminTxTable.filterOptions }}" on-filter-change="{{ adminTxTable.onFilterChange }}" demo-state-options="{{ adminTxTable.demoStateOptions }}" columns="{{ adminTxTable.columns }}" column-count="{{ adminTxTable.columnCount }}" is-loaded="{{ adminTxTable.isLoaded }}" rows="{{ adminTxTable.rows }}" is-loading="{{ adminTxTable.isLoading }}" skeleton-rows="{{ adminTxTable.skeletonRows }}" is-error="{{ adminTxTable.isError }}" on-retry="{{ adminTxTable.onRetry }}" is-empty="{{ adminTxTable.isEmpty }}" empty-title="{{ adminTxTable.emptyTitle }}" empty-body="{{ adminTxTable.emptyBody }}" has-empty-action="{{ adminTxTable.hasEmptyAction }}" empty-action-label="{{ adminTxTable.emptyActionLabel }}" on-empty-action="{{ adminTxTable.onEmptyAction }}" pagination-label="{{ adminTxTable.paginationLabel }}" prev-disabled="{{ adminTxTable.prevDisabled }}" on-prev="{{ adminTxTable.onPrev }}" next-disabled="{{ adminTxTable.nextDisabled }}" on-next="{{ adminTxTable.onNext }}" hint-size="100%,480px"></dc-import>
+      </sc-if>
+
+      <sc-if value="{{ isAdminOrgDetail }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ backToOrgs }}" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:0;margin-bottom:16px">← All organizations</button>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+              <h1 style="font-size:24px;font-weight:600;margin:0">{{ adminOrgDetail.org.name }}</h1>
+              <span style="{{ adminOrgDetail.badge }}">{{ adminOrgDetail.badgeLabel }}</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted)">{{ adminOrgDetail.org.contactEmail }}</div>
+          </div>
+          <button onClick="{{ adminOrgDetail.onToggle }}" style="{{ adminOrgDetail.toggleBtnStyle }}">{{ adminOrgDetail.toggleLabel }}</button>
+        </div>
+        <div style="display:flex;border-bottom:1px solid var(--border);margin:20px 0 24px">
+          <sc-for list="{{ adminOrgDetail.tabs }}" as="t" hint-placeholder-count="5">
+            <button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ adminOrgDetail.showProfile }}" hint-placeholder-val="{{ true }}">
+          <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px;display:flex;flex-direction:column;gap:16px;max-width:520px">
+            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Organization name</div><div style="font-size:14px">{{ adminOrgDetail.org.name }}</div></div>
+            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Contact email</div><div style="font-size:14px">{{ adminOrgDetail.org.contactEmail }}</div></div>
+            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Billing email</div><div style="font-size:14px">{{ adminOrgDetail.org.billingEmail }}</div></div>
+            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Signed up</div><div style="font-size:14px">{{ adminOrgDetail.signedUp }}</div></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ adminOrgDetail.showMembers }}" hint-placeholder-val="{{ false }}">
+          <dc-import name="DataTable" title="{{ adminOrgDetail.membersTable.title }}" has-action="{{ adminOrgDetail.membersTable.hasAction }}" action-label="{{ adminOrgDetail.membersTable.actionLabel }}" on-action="{{ adminOrgDetail.membersTable.onAction }}" searchable="{{ adminOrgDetail.membersTable.searchable }}" search-value="{{ adminOrgDetail.membersTable.searchValue }}" search-placeholder="{{ adminOrgDetail.membersTable.searchPlaceholder }}" on-search-change="{{ adminOrgDetail.membersTable.onSearchChange }}" has-filter="{{ adminOrgDetail.membersTable.hasFilter }}" filter-value="{{ adminOrgDetail.membersTable.filterValue }}" filter-options="{{ adminOrgDetail.membersTable.filterOptions }}" on-filter-change="{{ adminOrgDetail.membersTable.onFilterChange }}" demo-state-options="{{ adminOrgDetail.membersTable.demoStateOptions }}" columns="{{ adminOrgDetail.membersTable.columns }}" column-count="{{ adminOrgDetail.membersTable.columnCount }}" is-loaded="{{ adminOrgDetail.membersTable.isLoaded }}" rows="{{ adminOrgDetail.membersTable.rows }}" is-loading="{{ adminOrgDetail.membersTable.isLoading }}" skeleton-rows="{{ adminOrgDetail.membersTable.skeletonRows }}" is-error="{{ adminOrgDetail.membersTable.isError }}" on-retry="{{ adminOrgDetail.membersTable.onRetry }}" is-empty="{{ adminOrgDetail.membersTable.isEmpty }}" empty-title="{{ adminOrgDetail.membersTable.emptyTitle }}" empty-body="{{ adminOrgDetail.membersTable.emptyBody }}" has-empty-action="{{ adminOrgDetail.membersTable.hasEmptyAction }}" empty-action-label="{{ adminOrgDetail.membersTable.emptyActionLabel }}" on-empty-action="{{ adminOrgDetail.membersTable.onEmptyAction }}" pagination-label="{{ adminOrgDetail.membersTable.paginationLabel }}" prev-disabled="{{ adminOrgDetail.membersTable.prevDisabled }}" on-prev="{{ adminOrgDetail.membersTable.onPrev }}" next-disabled="{{ adminOrgDetail.membersTable.nextDisabled }}" on-next="{{ adminOrgDetail.membersTable.onNext }}" hint-size="100%,360px"></dc-import>
+        </sc-if>
+        <sc-if value="{{ adminOrgDetail.showSubscription }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px;max-width:520px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Plan</span><span style="font-size:14px;font-weight:600">{{ adminOrgDetail.plan.name }}</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Price</span><span style="font-size:14px;font-variant-numeric:tabular-nums">{{ adminOrgDetail.planPrice }}/mo</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Subscription status</span><span style="{{ adminOrgDetail.subBadge }}">{{ adminOrgDetail.subBadgeLabel }}</span></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ adminOrgDetail.showPayments }}" hint-placeholder-val="{{ false }}">
+          <dc-import name="DataTable" title="{{ adminOrgDetail.paymentsTable.title }}" has-action="{{ adminOrgDetail.paymentsTable.hasAction }}" action-label="{{ adminOrgDetail.paymentsTable.actionLabel }}" on-action="{{ adminOrgDetail.paymentsTable.onAction }}" searchable="{{ adminOrgDetail.paymentsTable.searchable }}" search-value="{{ adminOrgDetail.paymentsTable.searchValue }}" search-placeholder="{{ adminOrgDetail.paymentsTable.searchPlaceholder }}" on-search-change="{{ adminOrgDetail.paymentsTable.onSearchChange }}" has-filter="{{ adminOrgDetail.paymentsTable.hasFilter }}" filter-value="{{ adminOrgDetail.paymentsTable.filterValue }}" filter-options="{{ adminOrgDetail.paymentsTable.filterOptions }}" on-filter-change="{{ adminOrgDetail.paymentsTable.onFilterChange }}" demo-state-options="{{ adminOrgDetail.paymentsTable.demoStateOptions }}" columns="{{ adminOrgDetail.paymentsTable.columns }}" column-count="{{ adminOrgDetail.paymentsTable.columnCount }}" is-loaded="{{ adminOrgDetail.paymentsTable.isLoaded }}" rows="{{ adminOrgDetail.paymentsTable.rows }}" is-loading="{{ adminOrgDetail.paymentsTable.isLoading }}" skeleton-rows="{{ adminOrgDetail.paymentsTable.skeletonRows }}" is-error="{{ adminOrgDetail.paymentsTable.isError }}" on-retry="{{ adminOrgDetail.paymentsTable.onRetry }}" is-empty="{{ adminOrgDetail.paymentsTable.isEmpty }}" empty-title="{{ adminOrgDetail.paymentsTable.emptyTitle }}" empty-body="{{ adminOrgDetail.paymentsTable.emptyBody }}" has-empty-action="{{ adminOrgDetail.paymentsTable.hasEmptyAction }}" empty-action-label="{{ adminOrgDetail.paymentsTable.emptyActionLabel }}" on-empty-action="{{ adminOrgDetail.paymentsTable.onEmptyAction }}" pagination-label="{{ adminOrgDetail.paymentsTable.paginationLabel }}" prev-disabled="{{ adminOrgDetail.paymentsTable.prevDisabled }}" on-prev="{{ adminOrgDetail.paymentsTable.onPrev }}" next-disabled="{{ adminOrgDetail.paymentsTable.nextDisabled }}" on-next="{{ adminOrgDetail.paymentsTable.onNext }}" hint-size="100%,360px"></dc-import>
+        </sc-if>
+        <sc-if value="{{ adminOrgDetail.showTransactions }}" hint-placeholder-val="{{ false }}">
+          <dc-import name="DataTable" title="{{ adminOrgDetail.transactionsTable.title }}" has-action="{{ adminOrgDetail.transactionsTable.hasAction }}" action-label="{{ adminOrgDetail.transactionsTable.actionLabel }}" on-action="{{ adminOrgDetail.transactionsTable.onAction }}" searchable="{{ adminOrgDetail.transactionsTable.searchable }}" search-value="{{ adminOrgDetail.transactionsTable.searchValue }}" search-placeholder="{{ adminOrgDetail.transactionsTable.searchPlaceholder }}" on-search-change="{{ adminOrgDetail.transactionsTable.onSearchChange }}" has-filter="{{ adminOrgDetail.transactionsTable.hasFilter }}" filter-value="{{ adminOrgDetail.transactionsTable.filterValue }}" filter-options="{{ adminOrgDetail.transactionsTable.filterOptions }}" on-filter-change="{{ adminOrgDetail.transactionsTable.onFilterChange }}" demo-state-options="{{ adminOrgDetail.transactionsTable.demoStateOptions }}" columns="{{ adminOrgDetail.transactionsTable.columns }}" column-count="{{ adminOrgDetail.transactionsTable.columnCount }}" is-loaded="{{ adminOrgDetail.transactionsTable.isLoaded }}" rows="{{ adminOrgDetail.transactionsTable.rows }}" is-loading="{{ adminOrgDetail.transactionsTable.isLoading }}" skeleton-rows="{{ adminOrgDetail.transactionsTable.skeletonRows }}" is-error="{{ adminOrgDetail.transactionsTable.isError }}" on-retry="{{ adminOrgDetail.transactionsTable.onRetry }}" is-empty="{{ adminOrgDetail.transactionsTable.isEmpty }}" empty-title="{{ adminOrgDetail.transactionsTable.emptyTitle }}" empty-body="{{ adminOrgDetail.transactionsTable.emptyBody }}" has-empty-action="{{ adminOrgDetail.transactionsTable.hasEmptyAction }}" empty-action-label="{{ adminOrgDetail.transactionsTable.emptyActionLabel }}" on-empty-action="{{ adminOrgDetail.transactionsTable.onEmptyAction }}" pagination-label="{{ adminOrgDetail.transactionsTable.paginationLabel }}" prev-disabled="{{ adminOrgDetail.transactionsTable.prevDisabled }}" on-prev="{{ adminOrgDetail.transactionsTable.onPrev }}" next-disabled="{{ adminOrgDetail.transactionsTable.nextDisabled }}" on-next="{{ adminOrgDetail.transactionsTable.onNext }}" hint-size="100%,360px"></dc-import>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ isOrgProfile }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+          <h1 style="font-size:24px;font-weight:600;margin:0">Organization</h1>
+          <sc-if value="{{ orgProfileNotEditing }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ startEditOrgProfile }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer">Edit</button>
+          </sc-if>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px;max-width:520px">
+          <sc-if value="{{ orgProfileNotEditing }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Organization name</div><div style="font-size:14px">{{ myOrgName }}</div></div>
+              <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Contact email</div><div style="font-size:14px">{{ myOrgContactEmail }}</div></div>
+              <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Billing email</div><div style="font-size:14px">{{ myOrgBillingEmail }}</div></div>
+              <div style="display:flex;gap:32px">
+                <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Plan</div><div style="font-size:14px">{{ myOrgPlanName }}</div></div>
+                <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Status</div><span style="{{ myOrgBadgeStyle }}">{{ myOrgBadgeLabel }}</span></div>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ orgProfileEditing }}" hint-placeholder-val="{{ false }}">
+            <form onSubmit="{{ saveOrgProfile }}" style="display:flex;flex-direction:column;gap:16px">
+              <div>
+                <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Organization name</label>
+                <input type="text" value="{{ orgDraftName }}" onChange="{{ onOrgDraftNameChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+                <sc-if value="{{ orgDraftErrors.name }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ orgDraftErrors.name }}</div></sc-if>
+              </div>
+              <div>
+                <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Contact email</label>
+                <input type="email" value="{{ orgDraftContactEmail }}" onChange="{{ onOrgDraftContactEmailChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+                <sc-if value="{{ orgDraftErrors.contactEmail }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ orgDraftErrors.contactEmail }}</div></sc-if>
+              </div>
+              <div>
+                <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Billing email</label>
+                <input type="email" value="{{ orgDraftBillingEmail }}" onChange="{{ onOrgDraftBillingEmailChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+                <sc-if value="{{ orgDraftErrors.billingEmail }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ orgDraftErrors.billingEmail }}</div></sc-if>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Save changes</button>
+                <button type="button" onClick="{{ cancelEditOrgProfile }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+              </div>
+            </form>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isOrgMembers }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Members</h1>
+        <dc-import name="DataTable" title="{{ membersTable.title }}" has-action="{{ membersTable.hasAction }}" action-label="{{ membersTable.actionLabel }}" on-action="{{ membersTable.onAction }}" searchable="{{ membersTable.searchable }}" search-value="{{ membersTable.searchValue }}" search-placeholder="{{ membersTable.searchPlaceholder }}" on-search-change="{{ membersTable.onSearchChange }}" has-filter="{{ membersTable.hasFilter }}" filter-value="{{ membersTable.filterValue }}" filter-options="{{ membersTable.filterOptions }}" on-filter-change="{{ membersTable.onFilterChange }}" demo-state-options="{{ membersTable.demoStateOptions }}" columns="{{ membersTable.columns }}" column-count="{{ membersTable.columnCount }}" is-loaded="{{ membersTable.isLoaded }}" rows="{{ membersTable.rows }}" is-loading="{{ membersTable.isLoading }}" skeleton-rows="{{ membersTable.skeletonRows }}" is-error="{{ membersTable.isError }}" on-retry="{{ membersTable.onRetry }}" is-empty="{{ membersTable.isEmpty }}" empty-title="{{ membersTable.emptyTitle }}" empty-body="{{ membersTable.emptyBody }}" has-empty-action="{{ membersTable.hasEmptyAction }}" empty-action-label="{{ membersTable.emptyActionLabel }}" on-empty-action="{{ membersTable.onEmptyAction }}" pagination-label="{{ membersTable.paginationLabel }}" prev-disabled="{{ membersTable.prevDisabled }}" on-prev="{{ membersTable.onPrev }}" next-disabled="{{ membersTable.nextDisabled }}" on-next="{{ membersTable.onNext }}" hint-size="100%,420px"></dc-import>
+      </sc-if>
+
+      <sc-if value="{{ isOrgSubscription }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Subscription</h1>
+        <sc-if value="{{ cancelPending }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid #fde68a;background:var(--surface)beb;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#b45309">Cancellation requested — pending confirmation from Stripe.</div>
+        </sc-if>
+        <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px;max-width:520px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div>
+              <div style="font-size:16px;font-weight:600">{{ myOrgPlanName }}</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-top:2px;font-variant-numeric:tabular-nums">{{ myOrgPlanPrice }}/mo</div>
+            </div>
+            <span style="{{ myOrgSubBadgeStyle }}">{{ myOrgSubBadgeLabel }}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Renews in {{ daysUntilRenewal }} days</div>
+          <div style="display:flex;gap:10px">
+            <button onClick="{{ openChangePlanModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Change plan</button>
+            <sc-if value="{{ canCancel }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ openCancelSubscription }}" style="background:var(--surface);color:#b91c1c;border:1px solid #fecaca;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Cancel subscription</button>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isOrgBilling }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Billing</h1>
+        <dc-import name="DataTable" title="{{ billingTable.title }}" has-action="{{ billingTable.hasAction }}" action-label="{{ billingTable.actionLabel }}" on-action="{{ billingTable.onAction }}" searchable="{{ billingTable.searchable }}" search-value="{{ billingTable.searchValue }}" search-placeholder="{{ billingTable.searchPlaceholder }}" on-search-change="{{ billingTable.onSearchChange }}" has-filter="{{ billingTable.hasFilter }}" filter-value="{{ billingTable.filterValue }}" filter-options="{{ billingTable.filterOptions }}" on-filter-change="{{ billingTable.onFilterChange }}" demo-state-options="{{ billingTable.demoStateOptions }}" columns="{{ billingTable.columns }}" column-count="{{ billingTable.columnCount }}" is-loaded="{{ billingTable.isLoaded }}" rows="{{ billingTable.rows }}" is-loading="{{ billingTable.isLoading }}" skeleton-rows="{{ billingTable.skeletonRows }}" is-error="{{ billingTable.isError }}" on-retry="{{ billingTable.onRetry }}" is-empty="{{ billingTable.isEmpty }}" empty-title="{{ billingTable.emptyTitle }}" empty-body="{{ billingTable.emptyBody }}" has-empty-action="{{ billingTable.hasEmptyAction }}" empty-action-label="{{ billingTable.emptyActionLabel }}" on-empty-action="{{ billingTable.onEmptyAction }}" pagination-label="{{ billingTable.paginationLabel }}" prev-disabled="{{ billingTable.prevDisabled }}" on-prev="{{ billingTable.onPrev }}" next-disabled="{{ billingTable.nextDisabled }}" on-next="{{ billingTable.onNext }}" hint-size="100%,420px"></dc-import>
+      </sc-if>
+
+      <sc-if value="{{ isOrgBillingDetail }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ backToBilling }}" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:0;margin-bottom:16px">← All payments</button>
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Invoice {{ billingDetail.payment.invoiceNumber }}</h1>
+        <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px;max-width:480px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Amount</span><span style="font-size:14px;font-variant-numeric:tabular-nums">{{ billingDetail.amount }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Status</span><span style="{{ billingDetail.badgeStyle }}">{{ billingDetail.badgeLabel }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Date</span><span style="font-size:14px">{{ billingDetail.date }}</span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isOrgTransactions }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Transactions</h1>
+        <dc-import name="DataTable" title="{{ orgTxTable.title }}" has-action="{{ orgTxTable.hasAction }}" action-label="{{ orgTxTable.actionLabel }}" on-action="{{ orgTxTable.onAction }}" searchable="{{ orgTxTable.searchable }}" search-value="{{ orgTxTable.searchValue }}" search-placeholder="{{ orgTxTable.searchPlaceholder }}" on-search-change="{{ orgTxTable.onSearchChange }}" has-filter="{{ orgTxTable.hasFilter }}" filter-value="{{ orgTxTable.filterValue }}" filter-options="{{ orgTxTable.filterOptions }}" on-filter-change="{{ orgTxTable.onFilterChange }}" demo-state-options="{{ orgTxTable.demoStateOptions }}" columns="{{ orgTxTable.columns }}" column-count="{{ orgTxTable.columnCount }}" is-loaded="{{ orgTxTable.isLoaded }}" rows="{{ orgTxTable.rows }}" is-loading="{{ orgTxTable.isLoading }}" skeleton-rows="{{ orgTxTable.skeletonRows }}" is-error="{{ orgTxTable.isError }}" on-retry="{{ orgTxTable.onRetry }}" is-empty="{{ orgTxTable.isEmpty }}" empty-title="{{ orgTxTable.emptyTitle }}" empty-body="{{ orgTxTable.emptyBody }}" has-empty-action="{{ orgTxTable.hasEmptyAction }}" empty-action-label="{{ orgTxTable.emptyActionLabel }}" on-empty-action="{{ orgTxTable.onEmptyAction }}" pagination-label="{{ orgTxTable.paginationLabel }}" prev-disabled="{{ orgTxTable.prevDisabled }}" on-prev="{{ orgTxTable.onPrev }}" next-disabled="{{ orgTxTable.nextDisabled }}" on-next="{{ orgTxTable.onNext }}" hint-size="100%,420px"></dc-import>
+      </sc-if>
+
+      <sc-if value="{{ isMeProfile }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">My profile</h1>
+        <div style="display:flex;flex-direction:column;gap:20px;max-width:480px">
+          <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <h2 style="font-size:14px;font-weight:600;margin:0">Profile</h2>
+              <sc-if value="{{ meProfileNotEditing }}" hint-placeholder-val="{{ true }}"><button onClick="{{ startEditMeProfile }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer">Edit</button></sc-if>
+            </div>
+            <sc-if value="{{ meProfileNotEditing }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Name</div><div style="font-size:14px">{{ sessionName }}</div></div>
+                <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Email</div><div style="font-size:14px">{{ sessionEmail }}</div></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ meProfileEditing }}" hint-placeholder-val="{{ false }}">
+              <form onSubmit="{{ saveMeProfile }}" style="display:flex;flex-direction:column;gap:14px">
+                <div>
+                  <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Name</label>
+                  <input type="text" value="{{ meDraftName }}" onChange="{{ onMeDraftNameChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+                  <sc-if value="{{ meDraftErrors.name }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ meDraftErrors.name }}</div></sc-if>
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Email</label>
+                  <input type="email" value="{{ meDraftEmail }}" onChange="{{ onMeDraftEmailChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+                  <sc-if value="{{ meDraftErrors.email }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ meDraftErrors.email }}</div></sc-if>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Save</button>
+                  <button type="button" onClick="{{ cancelEditMeProfile }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+                </div>
+              </form>
+            </sc-if>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px">
+            <h2 style="font-size:14px;font-weight:600;margin:0 0 16px">Change password</h2>
+            <form onSubmit="{{ submitPwdChange }}" style="display:flex;flex-direction:column;gap:14px">
+              <div>
+                <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Current password</label>
+                <input type="password" value="{{ pwdCurrent }}" onChange="{{ onPwdCurrentChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+                <sc-if value="{{ pwdErrors.current }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ pwdErrors.current }}</div></sc-if>
+              </div>
+              <div>
+                <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">New password</label>
+                <input type="password" value="{{ pwdNext }}" onChange="{{ onPwdNextChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+                <sc-if value="{{ pwdErrors.next }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ pwdErrors.next }}</div></sc-if>
+              </div>
+              <div>
+                <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Confirm new password</label>
+                <input type="password" value="{{ pwdConfirm }}" onChange="{{ onPwdConfirmChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+                <sc-if value="{{ pwdErrors.confirm }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ pwdErrors.confirm }}</div></sc-if>
+              </div>
+              <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer">Update password</button>
+            </form>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isMeOrg }}" hint-placeholder-val="{{ false }}">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 24px">Organization</h1>
+        <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:24px;max-width:480px;display:flex;flex-direction:column;gap:16px">
+          <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Organization name</div><div style="font-size:14px">{{ myOrgName }}</div></div>
+          <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Plan</div><div style="font-size:14px">{{ myOrgPlanName }}</div></div>
+          <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Members</div><div style="font-size:14px;font-variant-numeric:tabular-nums">{{ myOrgMemberCount }}</div></div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<div style="position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:300">
+  <sc-for list="{{ toastsRendered }}" as="t" hint-placeholder-count="0">
+    <div style="{{ t.style }}">{{ t.message }}</div>
+  </sc-for>
+</div>
+
+<sc-if value="{{ hasModal }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(15,23,42,0.4);display:flex;align-items:center;justify-content:center;z-index:200;padding:16px" onClick="{{ closeModal }}">
+    <div style="background:var(--surface);border-radius:8px;padding:28px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto;box-sizing:border-box" onClick="{{ stopPropagation }}">
+
+      <sc-if value="{{ modalIsConfirm }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-size:16px;font-weight:600;margin:0 0 8px">{{ modal.title }}</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 24px">{{ modal.body }}</p>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button onClick="{{ closeModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+          <button onClick="{{ modal.onConfirm }}" style="{{ modalConfirmBtnStyle }}">{{ modal.confirmLabel }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ modalIsInvite }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-size:16px;font-weight:600;margin:0">Invite member</h2>
+        <form onSubmit="{{ submitInvite }}" style="display:flex;flex-direction:column;gap:14px;margin-top:16px">
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Name</label>
+            <input type="text" value="{{ modal.name }}" onChange="{{ onInviteNameChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <sc-if value="{{ modal.errors.name }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ modal.errors.name }}</div></sc-if>
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Email</label>
+            <input type="email" value="{{ modal.email }}" onChange="{{ onInviteEmailChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <sc-if value="{{ modal.errors.email }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ modal.errors.email }}</div></sc-if>
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Role</label>
+            <select value="{{ modal.role }}" onChange="{{ onInviteRoleChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit;background:var(--surface)">
+              <option value="ORG_MEMBER">Member</option>
+              <option value="ORG_ADMIN">Admin</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
+            <button type="button" onClick="{{ closeModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+            <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Send invite</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIsChangeRole }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-size:16px;font-weight:600;margin:0 0 16px">Change role — {{ modal.memberName }}</h2>
+        <form onSubmit="{{ submitChangeRole }}">
+          <select value="{{ modal.role }}" onChange="{{ onChangeRoleSelect }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit;background:var(--surface)">
+            <option value="ORG_MEMBER">Member</option>
+            <option value="ORG_ADMIN">Admin</option>
+          </select>
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+            <button type="button" onClick="{{ closeModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+            <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Update role</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIsPlanCreate }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-size:16px;font-weight:600;margin:0">Create plan</h2>
+        <form onSubmit="{{ submitCreatePlan }}" style="display:flex;flex-direction:column;gap:14px;margin-top:16px">
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Name</label>
+            <input type="text" value="{{ modal.name }}" onChange="{{ onPlanCreateNameChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <sc-if value="{{ modal.errors.name }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ modal.errors.name }}</div></sc-if>
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Price (cents)</label>
+            <input type="number" value="{{ modal.priceCents }}" onChange="{{ onPlanCreatePriceChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <sc-if value="{{ modal.errors.priceCents }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ modal.errors.priceCents }}</div></sc-if>
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Billing interval</label>
+            <select value="{{ modal.billingInterval }}" onChange="{{ onPlanCreateIntervalChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit;background:var(--surface)">
+              <option value="MONTH">Monthly</option>
+              <option value="YEAR">Yearly</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Features (one per line)</label>
+            <textarea value="{{ modal.featuresText }}" onChange="{{ onPlanCreateFeaturesChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit;min-height:80px;resize:vertical"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button type="button" onClick="{{ closeModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+            <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Create plan</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIsPlanEdit }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-size:16px;font-weight:600;margin:0">Edit plan</h2>
+        <p style="font-size:12px;color:#94a3b8;margin:8px 0 16px">Price and billing interval aren't editable — Stripe prices are immutable. Create a new plan to change pricing.</p>
+        <form onSubmit="{{ submitEditPlan }}" style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Name</label>
+            <input type="text" value="{{ modal.name }}" onChange="{{ onPlanEditNameChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit" />
+            <sc-if value="{{ modal.errors.name }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#dc2626;margin-top:4px">{{ modal.errors.name }}</div></sc-if>
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Features (one per line)</label>
+            <textarea value="{{ modal.featuresText }}" onChange="{{ onPlanEditFeaturesChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit;min-height:80px;resize:vertical"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button type="button" onClick="{{ closeModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+            <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Save changes</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIsChangePlan }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-size:16px;font-weight:600;margin:0 0 16px">Change plan</h2>
+        <form onSubmit="{{ submitChangePlan }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ changePlanCards }}" as="pc" hint-placeholder-count="3">
+              <div onClick="{{ pc.onClick }}" style="{{ pc.cardStyle }}">
+                <div style="display:flex;justify-content:space-between"><span style="font-size:14px;font-weight:600">{{ pc.name }}</span><span style="font-size:14px;font-variant-numeric:tabular-nums">{{ pc.price }}/mo</span></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+            <button type="button" onClick="{{ closeModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+            <button type="submit" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Confirm change</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIsCancelSubscription }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-size:16px;font-weight:600;margin:0">Cancel subscription</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin:8px 0 16px">This requests cancellation with Stripe — it isn't final until confirmed. Your access continues until then.</p>
+        <form onSubmit="{{ submitCancelSubscription }}">
+          <label style="font-size:13px;font-weight:500;color:var(--text-soft);margin-bottom:6px;display:block">Reason (optional)</label>
+          <textarea value="{{ modal.reason }}" onChange="{{ onCancelReasonChange }}" style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;color:var(--text);font-family:inherit;min-height:70px;resize:vertical"></textarea>
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+            <button type="button" onClick="{{ closeModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Keep subscription</button>
+            <button type="submit" style="background:var(--surface);color:#b91c1c;border:1px solid #fecaca;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Request cancellation</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ modalIsInvoice }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-size:16px;font-weight:600;margin:0">Invoice {{ modal.payment.invoiceNumber }}</h2>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">
+          <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Amount</span><span style="font-size:14px;font-variant-numeric:tabular-nums">{{ modalInvoiceAmount }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Status</span><span style="{{ modalInvoiceBadgeStyle }}">{{ modalInvoiceBadgeLabel }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-muted)">Date</span><span style="font-size:14px">{{ modalInvoiceDate }}</span></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:20px"><button onClick="{{ closeModal }}" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer">Close</button></div>
+      </sc-if>
+
+    </div>
+  </div>
+</sc-if>
+
+<div style="position:fixed;bottom:16px;right:280px;z-index:150;font-size:12px;display:flex;flex-direction:column;align-items:flex-end">
+  <sc-if value="{{ demoPanelOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;width:240px;margin-bottom:8px;box-sizing:border-box;box-shadow:0 8px 24px rgba(15,23,42,0.15)">
+      <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Prototype controls</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{ demoAccounts }}" as="acc" hint-placeholder-count="5">
+          <button onClick="{{ acc.onClick }}" style="text-align:left;background:var(--page-bg);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font-size:11px;color:var(--text-soft);cursor:pointer">{{ acc.label }}</button>
+        </sc-for>
+        <sc-if value="{{ session }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ logout }}" style="text-align:left;background:none;border:1px solid #fecaca;border-radius:6px;padding:7px 9px;font-size:11px;color:#b91c1c;cursor:pointer;margin-top:4px">Log out</button>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+  <button onClick="{{ toggleDemoPanel }}" title="Prototype controls: switch account" style="background:#0f172a;color:#fff;border:2px solid #fff;border-radius:9999px;width:44px;height:44px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(15,23,42,0.3);display:flex;align-items:center;justify-content:center;padding:0">{{ demoPanelToggleIcon }}</button>
+</div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const NOW = new Date('2026-08-15T12:00:00Z');
+const clone = (o) => JSON.parse(JSON.stringify(o));
+
+const PLANS_SEED = [
+  { id:'plan_starter', name:'Starter', priceCents:1900, billingInterval:'MONTH', features:['Up to 5 team members','Basic usage reporting','Email support (48h response)'], isActive:true },
+  { id:'plan_pro', name:'Pro', priceCents:4900, billingInterval:'MONTH', features:['Up to 25 team members','Advanced reporting & exports','Priority support (4h response)','API access'], isActive:true },
+  { id:'plan_enterprise', name:'Enterprise', priceCents:19900, billingInterval:'MONTH', features:['Unlimited team members','Custom reporting','Dedicated support & SLA','SSO & audit logs'], isActive:true },
+];
+
+const ORGS_SEED = [
+  { id:'org_acme', name:'Acme Corp', contactEmail:'ops@acme.test', billingEmail:'billing@acme.test', status:'ACTIVE', planId:'plan_pro', createdAt:'2025-11-03', memberCount:5, subscriptionStatus:'ACTIVE', cancelPending:false },
+  { id:'org_globex', name:'Globex Inc', contactEmail:'ops@globex.test', billingEmail:'billing@globex.test', status:'ACTIVE', planId:'plan_enterprise', createdAt:'2025-09-18', memberCount:4, subscriptionStatus:'ACTIVE', cancelPending:false },
+  { id:'org_initech', name:'Initech LLC', contactEmail:'hello@initech.test', billingEmail:'billing@initech.test', status:'TRIAL', planId:'plan_starter', createdAt:'2026-07-22', memberCount:2, subscriptionStatus:'TRIAL', cancelPending:false },
+  { id:'org_umbrella', name:'Umbrella Group', contactEmail:'contact@umbrella.test', billingEmail:'billing@umbrella.test', status:'SUSPENDED', planId:'plan_pro', createdAt:'2026-02-11', memberCount:3, subscriptionStatus:'ACTIVE', cancelPending:false },
+  { id:'org_soylent', name:'Soylent Corp', contactEmail:'admin@soylent.test', billingEmail:'billing@soylent.test', status:'PENDING', planId:'plan_starter', createdAt:'2026-08-10', memberCount:1, subscriptionStatus:'PENDING', cancelPending:false },
+  { id:'org_wayne', name:'Wayne Enterprises', contactEmail:'it@wayne.test', billingEmail:'billing@wayne.test', status:'CANCELLED', planId:'plan_pro', createdAt:'2026-01-05', memberCount:3, subscriptionStatus:'CANCELLED', cancelPending:false },
+];
+
+const MEMBERS_SEED = {
+  org_acme: [
+    { id:'u1', name:'Alicia Martin', email:'admin@acme.test', role:'ORG_ADMIN', status:'ACTIVE', joinedAt:'2025-11-03' },
+    { id:'u2', name:'Diego Fields', email:'member@acme.test', role:'ORG_MEMBER', status:'ACTIVE', joinedAt:'2025-11-10' },
+    { id:'u3', name:'Priya Shah', email:'priya@acme.test', role:'ORG_MEMBER', status:'ACTIVE', joinedAt:'2025-12-01' },
+    { id:'u4', name:'Sam Okafor', email:'sam@acme.test', role:'ORG_MEMBER', status:'INVITED', joinedAt:'2026-08-01' },
+    { id:'u5', name:'Jonas Weber', email:'jonas@acme.test', role:'ORG_MEMBER', status:'REMOVED', joinedAt:'2025-12-20' },
+  ],
+  org_globex: [
+    { id:'u6', name:'Nora Kimura', email:'admin@globex.test', role:'ORG_ADMIN', status:'ACTIVE', joinedAt:'2025-09-18' },
+    { id:'u7', name:'Theo Brandt', email:'member@globex.test', role:'ORG_MEMBER', status:'ACTIVE', joinedAt:'2025-09-25' },
+    { id:'u8', name:'Elena Cruz', email:'elena@globex.test', role:'ORG_MEMBER', status:'ACTIVE', joinedAt:'2025-10-14' },
+    { id:'u9', name:'Marcus Lee', email:'marcus@globex.test', role:'ORG_MEMBER', status:'INVITED', joinedAt:'2026-08-05' },
+  ],
+};
+
+const PAYMENTS_SEED = {
+  org_acme: [
+    { id:'pay1', invoiceNumber:'INV-2026-0731', amountCents:4900, status:'SUCCESS', date:'2026-07-03' },
+    { id:'pay2', invoiceNumber:'INV-2026-0631', amountCents:4900, status:'SUCCESS', date:'2026-06-03' },
+    { id:'pay3', invoiceNumber:'INV-2026-0531', amountCents:4900, status:'SUCCESS', date:'2026-05-03' },
+    { id:'pay4', invoiceNumber:'INV-2026-0431', amountCents:4900, status:'FAILED', date:'2026-04-03' },
+    { id:'pay5', invoiceNumber:'INV-2026-0432', amountCents:4900, status:'SUCCESS', date:'2026-04-05' },
+    { id:'pay6', invoiceNumber:'INV-2026-0331', amountCents:4900, status:'REFUNDED', date:'2026-03-03' },
+    { id:'pay7', invoiceNumber:'INV-2026-0231', amountCents:4900, status:'SUCCESS', date:'2026-02-03' },
+  ],
+  org_globex: [
+    { id:'pay8', invoiceNumber:'INV-2026-0718', amountCents:19900, status:'SUCCESS', date:'2026-07-18' },
+    { id:'pay9', invoiceNumber:'INV-2026-0618', amountCents:19900, status:'SUCCESS', date:'2026-06-18' },
+    { id:'pay10', invoiceNumber:'INV-2026-0518', amountCents:19900, status:'SUCCESS', date:'2026-05-18' },
+    { id:'pay11', invoiceNumber:'INV-2026-0418', amountCents:19900, status:'SUCCESS', date:'2026-04-18' },
+    { id:'pay12', invoiceNumber:'INV-2026-0318', amountCents:19900, status:'SUCCESS', date:'2026-03-18' },
+  ],
+};
+
+const TRANSACTIONS_SEED = {
+  org_acme: [
+    { id:'tx1', type:'CHARGE', amountCents:4900, status:'SUCCESS', date:'2026-07-03' },
+    { id:'tx2', type:'CHARGE', amountCents:4900, status:'SUCCESS', date:'2026-06-03' },
+    { id:'tx3', type:'CHARGE', amountCents:4900, status:'FAILED', date:'2026-04-03' },
+    { id:'tx4', type:'CHARGE', amountCents:4900, status:'SUCCESS', date:'2026-04-05' },
+    { id:'tx5', type:'REFUND', amountCents:4900, status:'REFUNDED', date:'2026-03-04' },
+    { id:'tx6', type:'CHARGE', amountCents:4900, status:'ROLLED_BACK', date:'2026-02-04' },
+    { id:'tx7', type:'CHARGE', amountCents:4900, status:'PENDING', date:'2026-08-03' },
+  ],
+  org_globex: [
+    { id:'tx8', type:'CHARGE', amountCents:19900, status:'SUCCESS', date:'2026-07-18' },
+    { id:'tx9', type:'CHARGE', amountCents:19900, status:'SUCCESS', date:'2026-06-18' },
+    { id:'tx10', type:'CHARGE', amountCents:19900, status:'SUCCESS', date:'2026-05-18' },
+    { id:'tx11', type:'CHARGE', amountCents:19900, status:'SUCCESS', date:'2026-04-18' },
+  ],
+  org_initech: [ { id:'tx12', type:'CHARGE', amountCents:1900, status:'PENDING', date:'2026-08-05' } ],
+  org_umbrella: [
+    { id:'tx13', type:'CHARGE', amountCents:4900, status:'FAILED', date:'2026-02-11' },
+    { id:'tx14', type:'CHARGE', amountCents:4900, status:'FAILED', date:'2026-01-11' },
+  ],
+  org_soylent: [],
+  org_wayne: [
+    { id:'tx15', type:'CHARGE', amountCents:4900, status:'SUCCESS', date:'2025-12-05' },
+    { id:'tx16', type:'REFUND', amountCents:4900, status:'REFUNDED', date:'2026-01-02' },
+  ],
+};
+
+const DEMO_ACCOUNTS = [
+  { key:'platform_admin', role:'PLATFORM_ADMIN', name:'Jordan Vance', email:'platform.admin@orbitsuite.test', orgId:null, orgName:null },
+  { key:'acme_admin', role:'ORG_ADMIN', name:'Alicia Martin', email:'admin@acme.test', orgId:'org_acme', orgName:'Acme Corp' },
+  { key:'acme_member', role:'ORG_MEMBER', name:'Diego Fields', email:'member@acme.test', orgId:'org_acme', orgName:'Acme Corp' },
+  { key:'globex_admin', role:'ORG_ADMIN', name:'Nora Kimura', email:'admin@globex.test', orgId:'org_globex', orgName:'Globex Inc' },
+  { key:'globex_member', role:'ORG_MEMBER', name:'Theo Brandt', email:'member@globex.test', orgId:'org_globex', orgName:'Globex Inc' },
+];
+
+const STATUS_STYLES = {
+  success:{bg:'#ecfdf5',fg:'#047857',border:'#a7f3d0'},
+  pending:{bg:'#fffbeb',fg:'#b45309',border:'#fde68a'},
+  failed:{bg:'#fef2f2',fg:'#b91c1c',border:'#fecaca'},
+  neutral:{bg:'#f8fafc',fg:'#475569',border:'#cbd5e1'},
+  warning:{bg:'#fff7ed',fg:'#c2410c',border:'#fed7aa'},
+  refund:{bg:'#f5f3ff',fg:'#6d28d9',border:'#ddd6fe'},
+  rollback:{bg:'#fff1f2',fg:'#9f1239',border:'#fecdd3'},
+  info:{bg:'#f0f9ff',fg:'#0369a1',border:'#bae6fd'},
+  brand:{bg:'#FDE8D6',fg:'#B85A24',border:'#FBD8B8'},
+};
+const STATUS_TOKEN_MAP = { ACTIVE:'success', SUCCESS:'success', PENDING:'pending', FAILED:'failed', CANCELLED:'neutral', REMOVED:'neutral', SUSPENDED:'warning', REFUNDED:'refund', ROLLED_BACK:'rollback', INVITED:'info', TRIAL:'info', EXPIRED:'brand' };
+
+const STATUS_FILTER_OPTIONS = [
+  {value:'all',label:'All statuses'}, {value:'PENDING',label:'Pending'}, {value:'SUCCESS',label:'Success'},
+  {value:'FAILED',label:'Failed'}, {value:'REFUNDED',label:'Refunded'}, {value:'ROLLED_BACK',label:'Rolled back'},
+];
+
+class Component extends DCLogic {
+  state = {
+    session: null,
+    route: 'landing',
+    toasts: [],
+    modal: null,
+    demoPanelOpen: false,
+    loginForm: { email:'', password:'', error:'' },
+    registerForm: { orgName:'', name:'', email:'', password:'', planId:'plan_pro', errors:{} },
+    forgotForm: { email:'', submitted:false },
+    resetForm: { password:'', confirm:'', errors:{}, submitted:false },
+    inviteAcceptForm: { password:'', confirm:'', errors:{}, submitted:false },
+    checkoutCard: { number:'4242 4242 4242 4242', expiry:'12/34', cvc:'123' },
+    newsletterEmail: '',
+    darkMode: false,
+    contactForm: { name:'', email:'', message:'', errors:{}, submitted:false },
+    checkoutPolling:false, checkoutPollTick:0, pendingPlanId:null,
+    orgs: clone(ORGS_SEED),
+    membersByOrg: clone(MEMBERS_SEED),
+    paymentsByOrg: clone(PAYMENTS_SEED),
+    transactionsByOrg: clone(TRANSACTIONS_SEED),
+    plansData: clone(PLANS_SEED),
+    selectedOrgId: null,
+    orgDetailTab: 'profile',
+    selectedPaymentId: null,
+    orgProfileEditing:false, orgProfileDraft:null,
+    meProfileEditing:false, meProfileDraft:null,
+    pwdForm:{ current:'', next:'', confirm:'', errors:{} },
+    tableUI: {
+      orgs:{page:1,search:'',filter:'all',demoState:'loaded'},
+      plans:{page:1,search:'',filter:'all',demoState:'loaded'},
+      adminTx:{page:1,search:'',filter:'all',demoState:'loaded'},
+      members:{page:1,search:'',filter:'all',demoState:'loaded'},
+      billing:{page:1,search:'',filter:'all',demoState:'loaded'},
+      orgTx:{page:1,search:'',filter:'all',demoState:'loaded'},
+    },
+  };
+
+  componentWillUnmount() { if (this._pollTimer) clearInterval(this._pollTimer); }
+
+  formatMoney = (cents) => '$' + (cents/100).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  formatDate = (iso) => new Date(iso+'T00:00:00Z').toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  formatRelative = (iso) => {
+    const d = new Date(iso+'T00:00:00Z');
+    const days = Math.round((NOW - d)/86400000);
+    if (days<=0) return 'today';
+    if (days===1) return '1 day ago';
+    if (days<30) return days+' days ago';
+    const months = Math.round(days/30);
+    if (months<12) return months+' month'+(months>1?'s':'')+' ago';
+    const years = Math.round(days/365);
+    return years+' year'+(years>1?'s':'')+' ago';
+  };
+  getBadge = (status) => { const token = STATUS_TOKEN_MAP[status] || 'neutral'; return { label: String(status).replace(/_/g,' '), token }; };
+  badgeStyleFor = (token) => { const c = STATUS_STYLES[token] || STATUS_STYLES.neutral; return { display:'inline-flex', alignItems:'center', borderRadius:'9999px', border:'1px solid '+c.border, padding:'2px 10px', fontSize:'12px', fontWeight:600, background:c.bg, color:c.fg, whiteSpace:'nowrap' }; };
+
+  cell = (value, opts={}) => ({ value, isPlain:true, isBadge:false, isActions:false, tdStyle:'padding:12px 16px;font-size:14px;color:var(--text);text-align:'+(opts.align||'left')+(opts.mono?';font-variant-numeric:tabular-nums':'') });
+  badgeCell = (status, opts={}) => { const b=this.getBadge(status); return { value:b.label, isBadge:true, isPlain:false, isActions:false, badgeStyle:this.badgeStyleFor(b.token), tdStyle:'padding:12px 16px;text-align:'+(opts.align||'left') }; };
+  customBadgeCell = (label, token, opts={}) => ({ value:label, isBadge:true, isPlain:false, isActions:false, badgeStyle:this.badgeStyleFor(token), tdStyle:'padding:12px 16px;text-align:'+(opts.align||'left') });
+  actionsCell = (actions) => ({ isActions:true, isPlain:false, isBadge:false, actions: actions.map(a=>({ label:a.label, onClick:a.onClick, style:'font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;border:1px solid '+(a.destructive?'#fecaca':'#e2e8f0')+';background:var(--surface);color:'+(a.destructive?'#b91c1c':'#334155') })), tdStyle:'padding:12px 16px;text-align:right' });
+  row = (id, cells, onClick) => ({ id, cells, onClick: onClick||(()=>{}), trStyle:'border-bottom:1px solid var(--border-soft);font-size:14px;cursor:'+(onClick?'pointer':'default') });
+
+  toast = (message, type='success') => { const id=Date.now()+'_'+Math.random(); this.setState(s=>({toasts:[...s.toasts,{id,message,type}]})); setTimeout(()=>this.dismissToast(id), 3200); };
+  dismissToast = (id) => this.setState(s=>({toasts:s.toasts.filter(t=>t.id!==id)}));
+
+  go = (route, extra={}) => this.setState({ route, ...extra });
+  roleHome = (role) => role==='PLATFORM_ADMIN' ? 'admin-stats' : role==='ORG_ADMIN' ? 'org-profile' : 'me-profile';
+
+  goLanding = () => this.go('landing');
+  goAbout = () => this.go('about');
+  goContact = () => this.go('contact');
+  onNewsletterEmailChange = (e) => this.setState({ newsletterEmail: e.target.value });
+  submitNewsletter = (e) => { e.preventDefault(); if(!/^\S+@\S+\.\S+$/.test(this.state.newsletterEmail)){ this.toast('Enter a valid email','error'); return; } this.setState({ newsletterEmail:'' }); this.toast("You're subscribed — check your inbox"); };
+
+  onContactFieldChange = (field,value) => this.setState(s=>({contactForm:{...s.contactForm,[field]:value,errors:{...s.contactForm.errors,[field]:undefined}}}));
+  onContactNameChange = (e) => this.onContactFieldChange('name', e.target.value);
+  onContactEmailChange = (e) => this.onContactFieldChange('email', e.target.value);
+  onContactMessageChange = (e) => this.onContactFieldChange('message', e.target.value);
+  submitContact = (e) => {
+    e.preventDefault();
+    const f = this.state.contactForm;
+    const errors = {};
+    if(!f.name.trim()) errors.name='Name is required';
+    if(!/^\S+@\S+\.\S+$/.test(f.email)) errors.email='A valid email is required';
+    if(!f.message.trim()) errors.message='Tell us a bit about what you need';
+    if(Object.keys(errors).length){ this.setState(s=>({contactForm:{...s.contactForm,errors}})); return; }
+    this.setState({ contactForm:{ name:'', email:'', message:'', errors:{}, submitted:true } });
+  };
+  goLogin = () => this.go('login');
+  goRegister = () => this.go('register');
+  goForgotPrevent = (e) => { e.preventDefault(); this.go('forgot'); };
+  goRegisterPrevent = (e) => { e.preventDefault(); this.go('register'); };
+  goLoginPrevent = (e) => { e.preventDefault(); this.go('login'); };
+  backToOrgs = () => this.go('admin-orgs');
+
+  quickLogin = (key) => { const acc=DEMO_ACCOUNTS.find(a=>a.key===key); this.setState({ session:{...acc}, route:this.roleHome(acc.role), demoPanelOpen:false }); this.toast('Signed in as '+acc.name); };
+  toggleDemoPanel = () => this.setState(s=>({demoPanelOpen: !s.demoPanelOpen}));
+  toggleDarkMode = () => this.setState(s=>({darkMode: !s.darkMode}));
+
+  onLoginEmailChange = (e) => this.setState(s=>({loginForm:{...s.loginForm, email:e.target.value, error:''}}));
+  onLoginPasswordChange = (e) => this.setState(s=>({loginForm:{...s.loginForm, password:e.target.value, error:''}}));
+  submitLogin = (e) => { e.preventDefault(); const {email,password}=this.state.loginForm; const acc=DEMO_ACCOUNTS.find(a=>a.email.toLowerCase()===email.trim().toLowerCase()); if(!acc || password!=='Password123!'){ this.setState(s=>({loginForm:{...s.loginForm,error:'Invalid email or password'}})); return; } this.setState({ session:{...acc}, route:this.roleHome(acc.role), loginForm:{email:'',password:'',error:''} }); this.toast('Welcome back, '+acc.name.split(' ')[0]); };
+
+  logout = () => this.setState({ session:null, route:'landing' });
+
+  onRegisterOrgNameChange = (e)=>this.setState(s=>({registerForm:{...s.registerForm,orgName:e.target.value,errors:{...s.registerForm.errors,orgName:undefined}}}));
+  onRegisterNameChange = (e)=>this.setState(s=>({registerForm:{...s.registerForm,name:e.target.value,errors:{...s.registerForm.errors,name:undefined}}}));
+  onRegisterEmailChange = (e)=>this.setState(s=>({registerForm:{...s.registerForm,email:e.target.value,errors:{...s.registerForm.errors,email:undefined}}}));
+  onRegisterPasswordChange = (e)=>this.setState(s=>({registerForm:{...s.registerForm,password:e.target.value,errors:{...s.registerForm.errors,password:undefined}}}));
+  validateRegister = (f) => { const errors={}; if(!f.orgName.trim()) errors.orgName='Organization name is required'; if(!f.name.trim()) errors.name='Your name is required'; if(!/^\S+@\S+\.\S+$/.test(f.email)) errors.email='A valid email is required'; const p=f.password; if(p.length<8||p.length>72||!/[a-z]/.test(p)||!/[A-Z]/.test(p)||!/[0-9]/.test(p)) errors.password='At least 8 characters with upper, lower, and a number'; if(!f.planId) errors.planId='Select a plan'; return errors; };
+  submitRegister = (e) => {
+    e.preventDefault();
+    const f = this.state.registerForm;
+    const errors = this.validateRegister(f);
+    if (Object.keys(errors).some(k=>errors[k])) { this.setState(s=>({registerForm:{...s.registerForm,errors}})); return; }
+    const newOrgId = 'org_'+Date.now();
+    const newOrg = { id:newOrgId, name:f.orgName, contactEmail:f.email, billingEmail:f.email, status:'PENDING', planId:f.planId, createdAt:'2026-08-15', memberCount:1, subscriptionStatus:'PENDING', cancelPending:false };
+    this.setState(s=>({
+      orgs:[newOrg,...s.orgs],
+      membersByOrg:{...s.membersByOrg, [newOrgId]:[{id:'u_'+Date.now(), name:f.name, email:f.email, role:'ORG_ADMIN', status:'ACTIVE', joinedAt:'2026-08-15'}]},
+      paymentsByOrg:{...s.paymentsByOrg, [newOrgId]:[]},
+      transactionsByOrg:{...s.transactionsByOrg, [newOrgId]:[]},
+      session:{ role:'ORG_ADMIN', name:f.name, email:f.email, orgId:newOrgId, orgName:f.orgName },
+      route:'checkout-pay', pendingPlanId:f.planId,
+      registerForm:{orgName:'',name:'',email:'',password:'',planId:'plan_pro',errors:{}},
+    }));
+  };
+
+  onForgotEmailChange = (e)=>this.setState(s=>({forgotForm:{...s.forgotForm,email:e.target.value}}));
+  submitForgot = (e)=>{ e.preventDefault(); this.setState(s=>({forgotForm:{...s.forgotForm,submitted:true}})); };
+
+  onResetPasswordChange=(e)=>this.setState(s=>({resetForm:{...s.resetForm,password:e.target.value,errors:{...s.resetForm.errors,password:undefined}}}));
+  onResetConfirmChange=(e)=>this.setState(s=>({resetForm:{...s.resetForm,confirm:e.target.value,errors:{...s.resetForm.errors,confirm:undefined}}}));
+  submitReset=(e)=>{ e.preventDefault(); const f=this.state.resetForm; const errors={}; const p=f.password; if(p.length<8||p.length>72||!/[a-z]/.test(p)||!/[A-Z]/.test(p)||!/[0-9]/.test(p)) errors.password='At least 8 characters with upper, lower, and a number'; if(f.confirm!==f.password) errors.confirm='Passwords do not match'; if(Object.keys(errors).length){ this.setState(s=>({resetForm:{...s.resetForm,errors}})); return; } this.setState(s=>({resetForm:{...s.resetForm,submitted:true}})); };
+
+  onInviteAcceptPasswordChange=(e)=>this.setState(s=>({inviteAcceptForm:{...s.inviteAcceptForm,password:e.target.value,errors:{...s.inviteAcceptForm.errors,password:undefined}}}));
+  onInviteAcceptConfirmChange=(e)=>this.setState(s=>({inviteAcceptForm:{...s.inviteAcceptForm,confirm:e.target.value,errors:{...s.inviteAcceptForm.errors,confirm:undefined}}}));
+  submitInviteAccept=(e)=>{ e.preventDefault(); const f=this.state.inviteAcceptForm; const errors={}; const p=f.password; if(p.length<8||p.length>72||!/[a-z]/.test(p)||!/[A-Z]/.test(p)||!/[0-9]/.test(p)) errors.password='At least 8 characters with upper, lower, and a number'; if(f.confirm!==f.password) errors.confirm='Passwords do not match'; if(Object.keys(errors).length){ this.setState(s=>({inviteAcceptForm:{...s.inviteAcceptForm,errors}})); return; } this.setState(s=>({inviteAcceptForm:{...s.inviteAcceptForm,submitted:true}})); };
+
+  onCardNumberChange=(e)=>this.setState(s=>({checkoutCard:{...s.checkoutCard,number:e.target.value}}));
+  onCardExpiryChange=(e)=>this.setState(s=>({checkoutCard:{...s.checkoutCard,expiry:e.target.value}}));
+  onCardCvcChange=(e)=>this.setState(s=>({checkoutCard:{...s.checkoutCard,cvc:e.target.value}}));
+
+  submitCheckoutPay = (e) => {
+    e.preventDefault();
+    this.setState({ route:'checkout-success', checkoutPolling:true, checkoutPollTick:0 });
+    this._pollTimer = setInterval(()=>{
+      this.setState(s=>{
+        const tick = s.checkoutPollTick+1;
+        if (tick>=3) {
+          clearInterval(this._pollTimer); this._pollTimer=null;
+          const orgId = s.session.orgId;
+          return { checkoutPollTick:tick, checkoutPolling:false, orgs:s.orgs.map(o=>o.id===orgId?{...o,status:'ACTIVE',subscriptionStatus:'ACTIVE'}:o) };
+        }
+        return { checkoutPollTick:tick };
+      });
+    }, 700);
+  };
+  continueAfterCheckout = () => this.go(this.roleHome(this.state.session.role));
+  cancelCheckout = () => { if(this._pollTimer){ clearInterval(this._pollTimer); this._pollTimer=null; } this.go('checkout-cancel'); };
+  retryCheckout = () => this.go('checkout-pay');
+
+  getMyOrg = () => { const ses=this.state.session; if(!ses || !ses.orgId) return null; return this.state.orgs.find(o=>o.id===ses.orgId) || null; };
+  getPlan = (planId) => this.state.plansData.find(p=>p.id===planId) || null;
+
+  startEditOrgProfile = () => { const org=this.getMyOrg(); if(!org) return; this.setState({ orgProfileEditing:true, orgProfileDraft:{ name:org.name, contactEmail:org.contactEmail, billingEmail:org.billingEmail, errors:{} } }); };
+  onOrgDraftNameChange=(e)=>this.setState(s=>({orgProfileDraft:{...s.orgProfileDraft,name:e.target.value,errors:{...s.orgProfileDraft.errors,name:undefined}}}));
+  onOrgDraftContactEmailChange=(e)=>this.setState(s=>({orgProfileDraft:{...s.orgProfileDraft,contactEmail:e.target.value,errors:{...s.orgProfileDraft.errors,contactEmail:undefined}}}));
+  onOrgDraftBillingEmailChange=(e)=>this.setState(s=>({orgProfileDraft:{...s.orgProfileDraft,billingEmail:e.target.value,errors:{...s.orgProfileDraft.errors,billingEmail:undefined}}}));
+  cancelEditOrgProfile = () => this.setState({ orgProfileEditing:false });
+  saveOrgProfile = (e) => {
+    e.preventDefault();
+    const d = this.state.orgProfileDraft;
+    const errors = {};
+    if(!d.name.trim()) errors.name='Organization name is required';
+    if(!/^\S+@\S+\.\S+$/.test(d.contactEmail)) errors.contactEmail='A valid email is required';
+    if(!/^\S+@\S+\.\S+$/.test(d.billingEmail)) errors.billingEmail='A valid email is required';
+    if(Object.keys(errors).length){ this.setState(s=>({orgProfileDraft:{...s.orgProfileDraft,errors}})); return; }
+    const orgId = this.state.session.orgId;
+    this.setState(s=>({ orgs:s.orgs.map(o=>o.id===orgId?{...o,name:d.name,contactEmail:d.contactEmail,billingEmail:d.billingEmail}:o), orgProfileEditing:false, session:{...s.session, orgName:d.name} }));
+    this.toast('Organization updated');
+  };
+
+  startEditMeProfile = () => this.setState(s=>({ meProfileEditing:true, meProfileDraft:{ name:s.session.name, email:s.session.email, errors:{} } }));
+  onMeDraftNameChange=(e)=>this.setState(s=>({meProfileDraft:{...s.meProfileDraft,name:e.target.value,errors:{...s.meProfileDraft.errors,name:undefined}}}));
+  onMeDraftEmailChange=(e)=>this.setState(s=>({meProfileDraft:{...s.meProfileDraft,email:e.target.value,errors:{...s.meProfileDraft.errors,email:undefined}}}));
+  cancelEditMeProfile = () => this.setState({ meProfileEditing:false });
+  saveMeProfile = (e) => {
+    e.preventDefault();
+    const d = this.state.meProfileDraft;
+    const errors = {};
+    if(!d.name.trim()) errors.name='Name is required';
+    if(!/^\S+@\S+\.\S+$/.test(d.email)) errors.email='A valid email is required';
+    if(Object.keys(errors).length){ this.setState(s=>({meProfileDraft:{...s.meProfileDraft,errors}})); return; }
+    this.setState(s=>({ session:{...s.session, name:d.name, email:d.email}, meProfileEditing:false }));
+    this.toast('Profile updated');
+  };
+
+  onPwdCurrentChange=(e)=>this.setState(s=>({pwdForm:{...s.pwdForm,current:e.target.value,errors:{...s.pwdForm.errors,current:undefined}}}));
+  onPwdNextChange=(e)=>this.setState(s=>({pwdForm:{...s.pwdForm,next:e.target.value,errors:{...s.pwdForm.errors,next:undefined}}}));
+  onPwdConfirmChange=(e)=>this.setState(s=>({pwdForm:{...s.pwdForm,confirm:e.target.value,errors:{...s.pwdForm.errors,confirm:undefined}}}));
+  submitPwdChange=(e)=>{
+    e.preventDefault();
+    const f=this.state.pwdForm; const errors={};
+    if(f.current!=='Password123!') errors.current='Current password is incorrect';
+    const p=f.next;
+    if(p.length<8||p.length>72||!/[a-z]/.test(p)||!/[A-Z]/.test(p)||!/[0-9]/.test(p)) errors.next='At least 8 characters with upper, lower, and a number';
+    if(f.confirm!==f.next) errors.confirm='Passwords do not match';
+    if(Object.keys(errors).length){ this.setState(s=>({pwdForm:{...s.pwdForm,errors}})); return; }
+    this.setState({ pwdForm:{current:'',next:'',confirm:'',errors:{}} });
+    this.toast('Password changed');
+  };
+
+  closeModal = () => this.setState({ modal:null });
+  stopPropagation = (e) => e.stopPropagation();
+
+  openInvite = () => this.setState({ modal:{ kind:'invite', name:'', email:'', role:'ORG_MEMBER', errors:{} } });
+  onInviteNameChange=(e)=>this.setState(s=>({modal:{...s.modal,name:e.target.value,errors:{...s.modal.errors,name:undefined}}}));
+  onInviteEmailChange=(e)=>this.setState(s=>({modal:{...s.modal,email:e.target.value,errors:{...s.modal.errors,email:undefined}}}));
+  onInviteRoleChange=(e)=>this.setState(s=>({modal:{...s.modal,role:e.target.value}}));
+  submitInvite = (e) => {
+    e.preventDefault();
+    const m = this.state.modal;
+    const errors = {};
+    if(!m.name.trim()) errors.name='Name is required';
+    if(!/^\S+@\S+\.\S+$/.test(m.email)) errors.email='A valid email is required';
+    if(Object.keys(errors).length){ this.setState(s=>({modal:{...s.modal,errors}})); return; }
+    const orgId = this.state.session.orgId;
+    const newMember = { id:'u_'+Date.now(), name:m.name, email:m.email, role:m.role, status:'INVITED', joinedAt:'2026-08-15' };
+    this.setState(s=>({ membersByOrg:{...s.membersByOrg, [orgId]:[...(s.membersByOrg[orgId]||[]), newMember]}, modal:null }));
+    this.toast('Invitation sent to '+m.email);
+  };
+
+  openChangeRole=(m)=>this.setState({ modal:{ kind:'change-role', memberId:m.id, memberName:m.name, role:m.role } });
+  onChangeRoleSelect=(e)=>this.setState(s=>({modal:{...s.modal, role:e.target.value}}));
+  submitChangeRole=(e)=>{
+    e.preventDefault();
+    const {memberId,role} = this.state.modal;
+    const orgId = this.state.session.orgId;
+    const members = this.state.membersByOrg[orgId];
+    const admins = members.filter(mm=>mm.role==='ORG_ADMIN'&&mm.status!=='REMOVED');
+    const target = members.find(mm=>mm.id===memberId);
+    if(target.role==='ORG_ADMIN' && role!=='ORG_ADMIN' && admins.length<=1){ this.toast('Cannot demote the last admin','error'); this.setState({modal:null}); return; }
+    this.setState(s=>({ membersByOrg:{...s.membersByOrg,[orgId]: members.map(mm=>mm.id===memberId?{...mm,role}:mm)}, modal:null }));
+    this.toast('Role updated');
+  };
+
+  confirmRemoveMember=(m)=>this.setState({ modal:{ kind:'confirm', title:'Remove member', body:'Remove '+m.name+' from your organization? They will lose access immediately.', confirmLabel:'Remove member', destructive:true, onConfirm:()=>this.removeMember(m.id) } });
+  removeMember=(memberId)=>{
+    const orgId = this.state.session.orgId;
+    const members = this.state.membersByOrg[orgId];
+    const admins = members.filter(mm=>mm.role==='ORG_ADMIN'&&mm.status!=='REMOVED');
+    const target = members.find(mm=>mm.id===memberId);
+    if(target.role==='ORG_ADMIN' && admins.length<=1){ this.toast('Cannot remove the last admin','error'); this.setState({modal:null}); return; }
+    this.setState(s=>({ membersByOrg:{...s.membersByOrg,[orgId]: members.map(mm=>mm.id===memberId?{...mm,status:'REMOVED'}:mm)}, modal:null }));
+    this.toast('Member removed');
+  };
+
+  openOrgDetail=(orgId)=>this.setState({ route:'admin-org-detail', selectedOrgId:orgId, orgDetailTab:'profile' });
+  confirmToggleOrgStatus=(org)=>{ const suspending = org.status!=='SUSPENDED'; this.setState({ modal:{ kind:'confirm', title: suspending?'Suspend organization':'Reactivate organization', body: suspending ? ('Suspend '+org.name+'? Its members will immediately lose access.') : ('Reactivate '+org.name+'? Members regain access right away.'), confirmLabel: suspending?'Suspend organization':'Reactivate organization', destructive: suspending, onConfirm:()=>this.setOrgStatus(org.id, suspending?'SUSPENDED':'ACTIVE') } }); };
+  setOrgStatus=(orgId,status)=>{ this.setState(s=>({ orgs:s.orgs.map(o=>o.id===orgId?{...o,status}:o), modal:null })); this.toast(status==='SUSPENDED'?'Organization suspended':'Organization reactivated'); };
+
+  openCreatePlan=()=>this.setState({ modal:{ kind:'plan-create', name:'', priceCents:'', billingInterval:'MONTH', featuresText:'', errors:{} } });
+  onPlanCreateNameChange=(e)=>this.setState(s=>({modal:{...s.modal,name:e.target.value,errors:{...s.modal.errors,name:undefined}}}));
+  onPlanCreatePriceChange=(e)=>this.setState(s=>({modal:{...s.modal,priceCents:e.target.value,errors:{...s.modal.errors,priceCents:undefined}}}));
+  onPlanCreateIntervalChange=(e)=>this.setState(s=>({modal:{...s.modal,billingInterval:e.target.value}}));
+  onPlanCreateFeaturesChange=(e)=>this.setState(s=>({modal:{...s.modal,featuresText:e.target.value}}));
+  submitCreatePlan=(e)=>{
+    e.preventDefault();
+    const m = this.state.modal;
+    const errors = {};
+    if(!m.name.trim()) errors.name='Plan name is required';
+    const price = Number(m.priceCents);
+    if(!price || price<=0) errors.priceCents='Enter a price in cents';
+    if(Object.keys(errors).length){ this.setState(s=>({modal:{...s.modal,errors}})); return; }
+    const features = m.featuresText.split('\n').map(f=>f.trim()).filter(Boolean);
+    const newPlan = { id:'plan_'+Date.now(), name:m.name, priceCents:price, billingInterval:m.billingInterval, features, isActive:true };
+    this.setState(s=>({ plansData:[...s.plansData,newPlan], modal:null }));
+    this.toast('Plan created');
+  };
+
+  openEditPlan=(planId)=>{ const plan=this.state.plansData.find(p=>p.id===planId); this.setState({ modal:{ kind:'plan-edit', planId, name:plan.name, featuresText:plan.features.join('\n'), errors:{} } }); };
+  onPlanEditNameChange=(e)=>this.setState(s=>({modal:{...s.modal,name:e.target.value,errors:{...s.modal.errors,name:undefined}}}));
+  onPlanEditFeaturesChange=(e)=>this.setState(s=>({modal:{...s.modal,featuresText:e.target.value}}));
+  submitEditPlan=(e)=>{
+    e.preventDefault();
+    const m = this.state.modal;
+    const errors = {};
+    if(!m.name.trim()) errors.name='Plan name is required';
+    if(Object.keys(errors).length){ this.setState(s=>({modal:{...s.modal,errors}})); return; }
+    const features = m.featuresText.split('\n').map(f=>f.trim()).filter(Boolean);
+    this.setState(s=>({ plansData:s.plansData.map(p=>p.id===m.planId?{...p,name:m.name,features}:p), modal:null }));
+    this.toast('Plan updated');
+  };
+  togglePlanActive=(planId)=>{ const plan=this.state.plansData.find(p=>p.id===planId); const nowActive=!plan.isActive; this.setState(s=>({ plansData:s.plansData.map(p=>p.id===planId?{...p,isActive:nowActive}:p) })); this.toast(nowActive?'Plan enabled':'Plan disabled'); };
+
+  openChangePlanModal=()=>{ const org=this.getMyOrg(); this.setState({ modal:{ kind:'change-plan', planId:org.planId } }); };
+  updateChangePlanField=(v)=>this.setState(s=>({modal:{...s.modal,planId:v}}));
+  submitChangePlan=(e)=>{ e.preventDefault(); const orgId=this.state.session.orgId; const planId=this.state.modal.planId; this.setState(s=>({ orgs:s.orgs.map(o=>o.id===orgId?{...o,planId}:o), modal:null })); this.toast('Plan updated'); };
+
+  openCancelSubscription=()=>this.setState({ modal:{ kind:'cancel-subscription', reason:'' } });
+  onCancelReasonChange=(e)=>this.setState(s=>({modal:{...s.modal,reason:e.target.value}}));
+  submitCancelSubscription=(e)=>{ e.preventDefault(); const orgId=this.state.session.orgId; this.setState(s=>({ orgs:s.orgs.map(o=>o.id===orgId?{...o,cancelPending:true}:o), modal:null })); this.toast('Cancellation requested — pending confirmation'); };
+
+  openInvoice=(payment)=>this.setState({ route:'org-billing-detail', selectedPaymentId: payment.id });
+  backToBilling = () => this.go('org-billing');
+
+  updateTableUI=(key,patch)=>this.setState(s=>({ tableUI:{...s.tableUI,[key]:{...s.tableUI[key],...patch}} }));
+
+  planCards = (selectedId, onSelect) => this.state.plansData.filter(p=>p.isActive).map(p=>({
+    id:p.id, name:p.name, price:this.formatMoney(p.priceCents), features:p.features,
+    onClick:()=>onSelect(p.id),
+    cardStyle: 'border:1px solid '+(p.id===selectedId?'#E37434':'#e2e8f0')+';border-radius:8px;padding:16px;cursor:pointer;background:'+(p.id===selectedId?'#FDE8D6':'#fff')+';flex:1;min-width:180px;box-sizing:border-box',
+  }));
+
+  computeStats = () => {
+    const orgs = this.state.orgs;
+    const total = orgs.length;
+    const totalUsers = Object.values(this.state.membersByOrg).reduce((sum,arr)=>sum+arr.filter(m=>m.status!=='REMOVED').length,0);
+    const activeSubs = orgs.filter(o=>o.subscriptionStatus==='ACTIVE').length;
+    const byPlan = this.state.plansData.map(p=>{
+      const subs = orgs.filter(o=>o.planId===p.id && (o.status==='ACTIVE'||o.status==='TRIAL'||o.status==='SUSPENDED'));
+      return { planName:p.name, subscribers:subs.length, monthlyRecurringCents: subs.length*p.priceCents };
+    }).filter(p=>p.subscribers>0);
+    let totalCents=0, successCount=0, failedCount=0;
+    Object.values(this.state.paymentsByOrg).forEach(list=>list.forEach(p=>{ if(p.status==='SUCCESS'){ totalCents+=p.amountCents; successCount++; } if(p.status==='FAILED') failedCount++; }));
+    const recentSignups = [...orgs].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,4);
+    return { total, totalUsers, activeSubs, byPlan, totalCents, successCount, failedCount, recentSignups };
+  };
+
+  buildTable = (cfg) => {
+    const { key, title, rows, columns, pageSize=10, searchable=false, searchFields=[], searchPlaceholder='Search…',
+            filterField=null, filterOptions=null, rowMapper, emptyTitle='Nothing here yet', emptyBody='There is no data to show.',
+            actionLabel=null, onAction=null } = cfg;
+    const ui = this.state.tableUI[key];
+    let filtered = rows;
+    if (searchable && ui.search.trim()) {
+      const q = ui.search.trim().toLowerCase();
+      filtered = filtered.filter(r => searchFields.some(f => String(r[f]||'').toLowerCase().includes(q)));
+    }
+    if (filterField && ui.filter !== 'all') filtered = filtered.filter(r => r[filterField]===ui.filter);
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total/pageSize));
+    const page = Math.min(ui.page, totalPages);
+    const start = (page-1)*pageSize;
+    const pageRows = filtered.slice(start, start+pageSize).map(rowMapper);
+    const start1 = total===0 ? 0 : start+1;
+    const end1 = Math.min(start+pageSize, total);
+    const demoState = ui.demoState;
+    const demoStates = ['loaded','loading','error','empty'];
+    const demoStateOptions = demoStates.map(dsv => ({
+      value: dsv, label: dsv[0].toUpperCase()+dsv.slice(1),
+      onClick: () => this.updateTableUI(key, {demoState: dsv}),
+      style: 'font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid '+(demoState===dsv?'#FBD8B8':'transparent')+';cursor:pointer;background:'+(demoState===dsv?'#FDE8D6':'none')+';color:'+(demoState===dsv?'#B85A24':'#94a3b8')+';font-weight:'+(demoState===dsv?'600':'400'),
+    }));
+    const isLoadedWithRows = demoState==='loaded' && total>0;
+    return {
+      title,
+      hasAction: !!actionLabel, actionLabel: actionLabel||'', onAction: onAction||(()=>{}),
+      searchable, searchValue: ui.search, searchPlaceholder, onSearchChange: (e)=>this.updateTableUI(key,{search:e.target.value, page:1}),
+      hasFilter: !!filterField, filterValue: ui.filter, filterOptions: filterOptions||[], onFilterChange: (e)=>this.updateTableUI(key,{filter:e.target.value, page:1}),
+      demoStateOptions,
+      columns: columns.map(c=>({label:c.label, thStyle:'padding:12px 16px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-muted);text-align:'+(c.align||'left')+';white-space:nowrap'})),
+      columnCount: columns.length,
+      isLoaded: isLoadedWithRows, rows: pageRows,
+      isLoading: demoState==='loading',
+      skeletonRows: [0,1,2,3,4].map(i=>({style:'height:14px;background:#f1f5f9;border-radius:4px;width:'+['55%','40%','65%','35%','48%'][i]})),
+      isError: demoState==='error', onRetry: ()=>this.updateTableUI(key,{demoState:'loaded'}),
+      isEmpty: demoState==='empty' || (demoState==='loaded' && total===0),
+      emptyTitle, emptyBody, hasEmptyAction: !!(actionLabel && onAction), emptyActionLabel: actionLabel||'', onEmptyAction: onAction||(()=>{}),
+      paginationLabel: total===0 ? 'No results' : ('Showing '+start1+'\u2013'+end1+' of '+total),
+      prevDisabled: page<=1, onPrev: ()=>this.updateTableUI(key,{page:page-1}),
+      nextDisabled: page>=totalPages, onNext: ()=>this.updateTableUI(key,{page:page+1}),
+    };
+  };
+
+  renderVals() {
+    const s = this.state;
+    const session = s.session;
+    const route = s.route;
+    const authedRoutes = new Set(['admin-stats','admin-orgs','admin-org-detail','admin-plans','admin-transactions','org-profile','org-members','org-subscription','org-billing','org-billing-detail','org-transactions','me-profile','me-org']);
+    const showAppShell = !!session && authedRoutes.has(route);
+    const showPublicShell = !showAppShell;
+
+    let navItems = [];
+    if (session) {
+      if (session.role==='PLATFORM_ADMIN') navItems = [{label:'Overview',r:'admin-stats'},{label:'Organizations',r:'admin-orgs'},{label:'Plans',r:'admin-plans'},{label:'Transactions',r:'admin-transactions'}];
+      else if (session.role==='ORG_ADMIN') navItems = [{label:'Organization',r:'org-profile'},{label:'Members',r:'org-members'},{label:'Subscription',r:'org-subscription'},{label:'Billing',r:'org-billing'},{label:'Transactions',r:'org-transactions'}];
+      else navItems = [{label:'My profile',r:'me-profile'},{label:'Organization',r:'me-org'}];
+    }
+    const navItemsRendered = navItems.map(n=>({
+      label:n.label, onClick:()=>this.go(n.r),
+      style: (route===n.r || (n.r==='admin-orgs'&&route==='admin-org-detail'))
+        ? 'display:flex;align-items:center;padding:8px 12px;border-radius:6px;background:#FDE8D6;color:#B85A24;font-size:14px;font-weight:500;cursor:pointer;border:none;text-align:left;width:100%;box-sizing:border-box'
+        : 'display:flex;align-items:center;padding:8px 12px;border-radius:6px;background:none;color:#475569;font-size:14px;font-weight:400;cursor:pointer;border:none;text-align:left;width:100%;box-sizing:border-box',
+    }));
+    const roleLabel = session ? ({PLATFORM_ADMIN:'Platform Admin', ORG_ADMIN:'Org Admin', ORG_MEMBER:'Member'}[session.role]) : '';
+
+    const publicPlanCards = this.state.plansData.filter(p=>p.isActive).map(p=>({ name:p.name, price:this.formatMoney(p.priceCents), features:p.features }));
+    const demoAccounts = DEMO_ACCOUNTS.map(a=>({ key:a.key, label:a.name+' — '+({PLATFORM_ADMIN:'Platform Admin', ORG_ADMIN:'Org Admin ('+a.orgName+')', ORG_MEMBER:'Member ('+a.orgName+')'}[a.role]), onClick:()=>this.quickLogin(a.key) }));
+
+    const rf = s.registerForm;
+    const registerPlanCards = this.planCards(rf.planId, (id)=>this.setState(st=>({registerForm:{...st.registerForm,planId:id,errors:{...st.registerForm.errors,planId:undefined}}})));
+
+    const pendingPlan = this.getPlan(s.pendingPlanId);
+    const checkoutConfirmed = !s.checkoutPolling && s.checkoutPollTick>=3;
+
+    const myOrg = this.getMyOrg();
+    const myOrgSafe = myOrg || { name:'', contactEmail:'', billingEmail:'', status:'ACTIVE', subscriptionStatus:'ACTIVE', planId:null, cancelPending:false, memberCount:0 };
+    const myOrgPlan = this.getPlan(myOrgSafe.planId);
+    const myOrgBadge = this.getBadge(myOrgSafe.status);
+    const myOrgSubBadge = this.getBadge(myOrgSafe.subscriptionStatus);
+
+    const od = s.orgProfileDraft || { name:'', contactEmail:'', billingEmail:'', errors:{} };
+    const md = s.meProfileDraft || { name:'', email:'', errors:{} };
+
+    let membersTable=null, billingTable=null, orgTxTable=null;
+    if (session && session.orgId) {
+      membersTable = this.buildTable({ key:'members', title:'Members', rows:this.state.membersByOrg[session.orgId]||[], pageSize:10,
+        columns:[{label:'Name'},{label:'Email'},{label:'Role'},{label:'Status'},{label:'Joined'},{label:'Actions',align:'right'}],
+        searchable:true, searchFields:['name','email'], searchPlaceholder:'Search members…',
+        rowMapper:(m)=>this.row(m.id,[ this.cell(m.name), this.cell(m.email), this.cell(m.role==='ORG_ADMIN'?'Admin':'Member'), this.badgeCell(m.status), this.cell(this.formatDate(m.joinedAt)),
+          this.actionsCell(m.status==='REMOVED'?[]:[{label:'Change role', onClick:()=>this.openChangeRole(m)},{label:'Remove', onClick:()=>this.confirmRemoveMember(m), destructive:true}]) ]),
+        emptyTitle:'No members match your search', emptyBody:'Try a different name or email.',
+        actionLabel:'Invite member', onAction:()=>this.openInvite() });
+
+      billingTable = this.buildTable({ key:'billing', title:'Payments', rows:this.state.paymentsByOrg[session.orgId]||[], pageSize:10,
+        columns:[{label:'Invoice'},{label:'Amount',align:'right'},{label:'Status'},{label:'Date'}],
+        rowMapper:(p)=>this.row(p.id,[ this.cell(p.invoiceNumber,{mono:true}), this.cell(this.formatMoney(p.amountCents),{align:'right',mono:true}), this.badgeCell(p.status), this.cell(this.formatDate(p.date)) ], ()=>this.openInvoice(p)),
+        emptyTitle:'No payments yet', emptyBody:'Payments will appear here once your subscription is billed.' });
+
+      orgTxTable = this.buildTable({ key:'orgTx', title:'Transactions', rows:this.state.transactionsByOrg[session.orgId]||[], pageSize:10,
+        columns:[{label:'Type'},{label:'Amount',align:'right'},{label:'Status'},{label:'Date'}],
+        filterField:'status', filterOptions:STATUS_FILTER_OPTIONS,
+        rowMapper:(t)=>this.row(t.id,[ this.cell(t.type), this.cell(this.formatMoney(t.amountCents),{align:'right',mono:true}), this.badgeCell(t.status), this.cell(this.formatDate(t.date)) ]),
+        emptyTitle:'No transactions', emptyBody:'No transactions have been recorded yet.' });
+    }
+
+    let billingDetail = null;
+    if (session && session.orgId) {
+      const payment = (this.state.paymentsByOrg[session.orgId]||[]).find(p=>p.id===s.selectedPaymentId) || (this.state.paymentsByOrg[session.orgId]||[])[0] || null;
+      if (payment) {
+        const pb = this.getBadge(payment.status);
+        billingDetail = { payment, amount: this.formatMoney(payment.amountCents), date: this.formatDate(payment.date), badgeStyle: this.badgeStyleFor(pb.token), badgeLabel: pb.label };
+      }
+    }
+
+    let orgsTable=null, plansTable=null, adminTxTable=null, statCards=[], recentSignupsList=[], byPlanList=[], adminOrgDetail=null;
+    if (session && session.role==='PLATFORM_ADMIN') {
+      orgsTable = this.buildTable({ key:'orgs', title:'Organizations', rows:this.state.orgs, pageSize:10,
+        columns:[{label:'Name'},{label:'Plan'},{label:'Status'},{label:'Members',align:'right'},{label:'Signed up'}],
+        searchable:true, searchFields:['name','contactEmail'], searchPlaceholder:'Search organizations…',
+        filterField:'status', filterOptions:[{value:'all',label:'All statuses'},{value:'ACTIVE',label:'Active'},{value:'TRIAL',label:'Trial'},{value:'SUSPENDED',label:'Suspended'},{value:'PENDING',label:'Pending'},{value:'CANCELLED',label:'Cancelled'}],
+        rowMapper:(o)=>this.row(o.id,[ this.cell(o.name), this.cell((this.getPlan(o.planId)||{}).name||'—'), this.badgeCell(o.status), this.cell(String(o.memberCount),{align:'right',mono:true}), this.cell(this.formatDate(o.createdAt)) ], ()=>this.openOrgDetail(o.id)),
+        emptyTitle:'No organizations match', emptyBody:'Try a different search or filter.' });
+
+      plansTable = this.buildTable({ key:'plans', title:'Plans', rows:this.state.plansData, pageSize:10,
+        columns:[{label:'Name'},{label:'Price',align:'right'},{label:'Billing'},{label:'Features',align:'right'},{label:'Status'},{label:'Actions',align:'right'}],
+        rowMapper:(p)=>this.row(p.id,[ this.cell(p.name), this.cell(this.formatMoney(p.priceCents)+'/mo',{align:'right',mono:true}), this.cell(p.billingInterval==='MONTH'?'Monthly':'Yearly'), this.cell(String(p.features.length),{align:'right',mono:true}), this.customBadgeCell(p.isActive?'Active':'Disabled', p.isActive?'success':'neutral'),
+          this.actionsCell([{label:'Edit', onClick:()=>this.openEditPlan(p.id)},{label:p.isActive?'Disable':'Enable', onClick:()=>this.togglePlanActive(p.id), destructive:p.isActive}]) ]),
+        emptyTitle:'No plans yet', emptyBody:'Create a plan to get started.',
+        actionLabel:'Create plan', onAction:()=>this.openCreatePlan() });
+
+      const allTx = [];
+      Object.keys(this.state.transactionsByOrg).forEach(orgId=>{
+        const org = this.state.orgs.find(o=>o.id===orgId);
+        (this.state.transactionsByOrg[orgId]||[]).forEach(t=>allTx.push({...t, orgName: org?org.name:orgId}));
+      });
+      allTx.sort((a,b)=>new Date(b.date)-new Date(a.date));
+      adminTxTable = this.buildTable({ key:'adminTx', title:'Transactions', rows:allTx, pageSize:10,
+        columns:[{label:'Organization'},{label:'Type'},{label:'Amount',align:'right'},{label:'Status'},{label:'Date'}],
+        searchable:true, searchFields:['orgName'], searchPlaceholder:'Search organization…',
+        filterField:'status', filterOptions:STATUS_FILTER_OPTIONS,
+        rowMapper:(t)=>this.row(t.id,[ this.cell(t.orgName), this.cell(t.type), this.cell(this.formatMoney(t.amountCents),{align:'right',mono:true}), this.badgeCell(t.status), this.cell(this.formatDate(t.date)) ]),
+        emptyTitle:'No transactions match', emptyBody:'Try a different search or filter.' });
+
+      const stats = this.computeStats();
+      statCards = [
+        {label:'Total organizations', value:String(stats.total)},
+        {label:'Total users', value:String(stats.totalUsers)},
+        {label:'Active subscriptions', value:String(stats.activeSubs)},
+        {label:'Total revenue', value:this.formatMoney(stats.totalCents)},
+        {label:'Failed payments', value:String(stats.failedCount)},
+      ];
+      recentSignupsList = stats.recentSignups.map(o=>({name:o.name, relative:this.formatRelative(o.createdAt)}));
+      byPlanList = stats.byPlan.map(b=>({planName:b.planName, subscribers:b.subscribers, mrr:this.formatMoney(b.monthlyRecurringCents)}));
+
+      const detailOrgId = s.selectedOrgId || (this.state.orgs[0] && this.state.orgs[0].id);
+      const dorg = this.state.orgs.find(o=>o.id===detailOrgId) || this.state.orgs[0];
+      const dplan = this.getPlan(dorg.planId) || {name:'—', priceCents:0};
+      const dBadge = this.getBadge(dorg.status);
+      const dSubBadge = this.getBadge(dorg.subscriptionStatus);
+      const dMembers = this.state.membersByOrg[dorg.id] || [];
+      const dPayments = this.state.paymentsByOrg[dorg.id] || [];
+      const dTx = this.state.transactionsByOrg[dorg.id] || [];
+      adminOrgDetail = {
+        org: dorg, plan: dplan,
+        badge: this.badgeStyleFor(dBadge.token), badgeLabel: dBadge.label,
+        subBadge: this.badgeStyleFor(dSubBadge.token), subBadgeLabel: dSubBadge.label,
+        planPrice: this.formatMoney(dplan.priceCents), signedUp: this.formatDate(dorg.createdAt),
+        toggleLabel: dorg.status==='SUSPENDED' ? 'Reactivate organization' : 'Suspend organization',
+        toggleBtnStyle: dorg.status==='SUSPENDED' ? 'background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer' : 'background:var(--surface);color:#c2410c;border:1px solid #fed7aa;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer',
+        onToggle: ()=>this.confirmToggleOrgStatus(dorg),
+        tabs: ['profile','members','subscription','payments','transactions'].map(t=>({
+          key:t, label:t[0].toUpperCase()+t.slice(1), active:s.orgDetailTab===t, onClick:()=>this.setState({orgDetailTab:t}),
+          style: s.orgDetailTab===t ? 'padding:8px 4px;margin-right:24px;border-bottom:2px solid #E37434;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none' : 'padding:8px 4px;margin-right:24px;border-bottom:2px solid transparent;color:var(--text-muted);font-size:14px;font-weight:500;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none',
+        })),
+        showProfile: s.orgDetailTab==='profile', showMembers: s.orgDetailTab==='members', showSubscription: s.orgDetailTab==='subscription', showPayments: s.orgDetailTab==='payments', showTransactions: s.orgDetailTab==='transactions',
+        membersTable: this.buildTable({ key:'members', title:'Members', rows:dMembers, pageSize:10, columns:[{label:'Name'},{label:'Email'},{label:'Role'},{label:'Status'},{label:'Joined'}], searchable:true, searchFields:['name','email'], searchPlaceholder:'Search members…',
+          rowMapper:(m)=>this.row(m.id,[ this.cell(m.name), this.cell(m.email), this.cell(m.role==='ORG_ADMIN'?'Admin':'Member'), this.badgeCell(m.status), this.cell(this.formatDate(m.joinedAt)) ]),
+          emptyTitle:'No members', emptyBody:'This organization has no members yet.' }),
+        paymentsTable: this.buildTable({ key:'billing', title:'Payments', rows:dPayments, pageSize:10, columns:[{label:'Invoice'},{label:'Amount',align:'right'},{label:'Status'},{label:'Date'}],
+          rowMapper:(p)=>this.row(p.id,[ this.cell(p.invoiceNumber,{mono:true}), this.cell(this.formatMoney(p.amountCents),{align:'right',mono:true}), this.badgeCell(p.status), this.cell(this.formatDate(p.date)) ]),
+          emptyTitle:'No payments', emptyBody:'No payments have been made yet.' }),
+        transactionsTable: this.buildTable({ key:'orgTx', title:'Transactions', rows:dTx, pageSize:10, columns:[{label:'Type'},{label:'Amount',align:'right'},{label:'Status'},{label:'Date'}], filterField:'status', filterOptions:STATUS_FILTER_OPTIONS,
+          rowMapper:(t)=>this.row(t.id,[ this.cell(t.type), this.cell(this.formatMoney(t.amountCents),{align:'right',mono:true}), this.badgeCell(t.status), this.cell(this.formatDate(t.date)) ]),
+          emptyTitle:'No transactions', emptyBody:'No transactions recorded.' }),
+      };
+    }
+
+    const modal = s.modal;
+    const modalKind = modal ? modal.kind : null;
+    let changePlanCards = [], modalConfirmBtnStyle = '', modalInvoiceAmount='', modalInvoiceBadgeStyle={}, modalInvoiceBadgeLabel='', modalInvoiceDate='';
+    if (modalKind==='confirm') modalConfirmBtnStyle = modal.destructive ? 'background:var(--surface);color:#b91c1c;border:1px solid #fecaca;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer' : 'background:#E37434;color:#fff;border:none;border-radius:6px;padding:9px 15px;font-size:14px;font-weight:500;cursor:pointer';
+    if (modalKind==='change-plan') changePlanCards = this.planCards(modal.planId, (id)=>this.updateChangePlanField(id));
+    if (modalKind==='invoice') { const p=modal.payment; modalInvoiceAmount=this.formatMoney(p.amountCents); const b=this.getBadge(p.status); modalInvoiceBadgeStyle=this.badgeStyleFor(b.token); modalInvoiceBadgeLabel=b.label; modalInvoiceDate=this.formatDate(p.date); }
+
+    return {
+      showPublicShell, showAppShell,
+      isLanding: route==='landing', isAbout: route==='about', goAbout: this.goAbout, isContact: route==='contact', goContact: this.goContact, isLogin: route==='login', isRegister: route==='register', isForgot: route==='forgot', isReset: route==='reset', isAcceptInvite: route==='accept-invite',
+      isCheckoutPay: route==='checkout-pay', isCheckoutSuccess: route==='checkout-success', isCheckoutCancel: route==='checkout-cancel',
+      isAdminStats: route==='admin-stats', isAdminOrgs: route==='admin-orgs', isAdminOrgDetail: route==='admin-org-detail', isAdminPlans: route==='admin-plans', isAdminTransactions: route==='admin-transactions',
+      isOrgProfile: route==='org-profile', isOrgMembers: route==='org-members', isOrgSubscription: route==='org-subscription', isOrgBilling: route==='org-billing', isOrgBillingDetail: route==='org-billing-detail', isOrgTransactions: route==='org-transactions',
+      isMeProfile: route==='me-profile', isMeOrg: route==='me-org',
+
+      goLanding: this.goLanding, goLogin: this.goLogin, goRegister: this.goRegister, goForgotPrevent: this.goForgotPrevent, goRegisterPrevent: this.goRegisterPrevent, goLoginPrevent: this.goLoginPrevent, backToOrgs: this.backToOrgs,
+      publicPlanCards, demoAccounts,
+      newsletterEmail: s.newsletterEmail, onNewsletterEmailChange: this.onNewsletterEmailChange, submitNewsletter: this.submitNewsletter,
+      contactName: s.contactForm.name, contactEmail: s.contactForm.email, contactMessage: s.contactForm.message, contactErrors: s.contactForm.errors, contactSubmitted: s.contactForm.submitted, contactNotSubmitted: !s.contactForm.submitted,
+      onContactNameChange: this.onContactNameChange, onContactEmailChange: this.onContactEmailChange, onContactMessageChange: this.onContactMessageChange, submitContact: this.submitContact,
+
+      loginEmail: s.loginForm.email, loginPassword: s.loginForm.password, onLoginEmailChange: this.onLoginEmailChange, onLoginPasswordChange: this.onLoginPasswordChange, submitLogin: this.submitLogin,
+      hasLoginError: !!s.loginForm.error, loginError: s.loginForm.error,
+
+      registerOrgName: rf.orgName, registerName: rf.name, registerEmail: rf.email, registerPassword: rf.password, registerErrors: rf.errors, registerPlanCards,
+      onRegisterOrgNameChange: this.onRegisterOrgNameChange, onRegisterNameChange: this.onRegisterNameChange, onRegisterEmailChange: this.onRegisterEmailChange, onRegisterPasswordChange: this.onRegisterPasswordChange, submitRegister: this.submitRegister,
+
+      forgotEmail: s.forgotForm.email, forgotSubmitted: s.forgotForm.submitted, forgotNotSubmitted: !s.forgotForm.submitted, onForgotEmailChange: this.onForgotEmailChange, submitForgot: this.submitForgot,
+
+      resetPassword: s.resetForm.password, resetConfirm: s.resetForm.confirm, resetErrors: s.resetForm.errors, resetSubmitted: s.resetForm.submitted, resetNotSubmitted: !s.resetForm.submitted,
+      onResetPasswordChange: this.onResetPasswordChange, onResetConfirmChange: this.onResetConfirmChange, submitReset: this.submitReset,
+
+      inviteAcceptPassword: s.inviteAcceptForm.password, inviteAcceptConfirm: s.inviteAcceptForm.confirm, inviteAcceptErrors: s.inviteAcceptForm.errors, inviteAcceptSubmitted: s.inviteAcceptForm.submitted, inviteAcceptNotSubmitted: !s.inviteAcceptForm.submitted,
+      onInviteAcceptPasswordChange: this.onInviteAcceptPasswordChange, onInviteAcceptConfirmChange: this.onInviteAcceptConfirmChange, submitInviteAccept: this.submitInviteAccept,
+
+      pendingPlanName: pendingPlan?pendingPlan.name:'', pendingPlanPrice: pendingPlan?this.formatMoney(pendingPlan.priceCents):'',
+      cardNumber: s.checkoutCard.number, cardExpiry: s.checkoutCard.expiry, cardCvc: s.checkoutCard.cvc,
+      onCardNumberChange: this.onCardNumberChange, onCardExpiryChange: this.onCardExpiryChange, onCardCvcChange: this.onCardCvcChange,
+      submitCheckoutPay: this.submitCheckoutPay, cancelCheckout: this.cancelCheckout, retryCheckout: this.retryCheckout,
+      checkoutConfirmed, checkoutNotConfirmed: !checkoutConfirmed, checkoutDots: '.'.repeat((s.checkoutPollTick%3)+1), continueAfterCheckout: this.continueAfterCheckout,
+
+      roleLabel, navItemsRendered, sessionName: session?session.name:'', sessionEmail: session?session.email:'', logout: this.logout,
+
+      statCards, recentSignupsList, byPlanList,
+      orgsTable, plansTable, adminTxTable, adminOrgDetail,
+
+      orgProfileNotEditing: !s.orgProfileEditing, orgProfileEditing: s.orgProfileEditing, startEditOrgProfile: this.startEditOrgProfile, cancelEditOrgProfile: this.cancelEditOrgProfile, saveOrgProfile: this.saveOrgProfile,
+      myOrgName: myOrgSafe.name, myOrgContactEmail: myOrgSafe.contactEmail, myOrgBillingEmail: myOrgSafe.billingEmail, myOrgPlanName: myOrgPlan?myOrgPlan.name:'—', myOrgPlanPrice: myOrgPlan?this.formatMoney(myOrgPlan.priceCents):'',
+      myOrgBadgeStyle: this.badgeStyleFor(myOrgBadge.token), myOrgBadgeLabel: myOrgBadge.label, myOrgSubBadgeStyle: this.badgeStyleFor(myOrgSubBadge.token), myOrgSubBadgeLabel: myOrgSubBadge.label, myOrgMemberCount: myOrgSafe.memberCount,
+      orgDraftName: od.name, orgDraftContactEmail: od.contactEmail, orgDraftBillingEmail: od.billingEmail, orgDraftErrors: od.errors,
+      onOrgDraftNameChange: this.onOrgDraftNameChange, onOrgDraftContactEmailChange: this.onOrgDraftContactEmailChange, onOrgDraftBillingEmailChange: this.onOrgDraftBillingEmailChange,
+
+      membersTable, openInvite: this.openInvite,
+
+      cancelPending: myOrgSafe.cancelPending, canCancel: myOrgSafe.subscriptionStatus==='ACTIVE' && !myOrgSafe.cancelPending, daysUntilRenewal: 18,
+      openChangePlanModal: this.openChangePlanModal, openCancelSubscription: this.openCancelSubscription,
+
+      billingTable, orgTxTable, billingDetail, backToBilling: this.backToBilling,
+
+      meProfileNotEditing: !s.meProfileEditing, meProfileEditing: s.meProfileEditing, startEditMeProfile: this.startEditMeProfile, cancelEditMeProfile: this.cancelEditMeProfile, saveMeProfile: this.saveMeProfile,
+      meDraftName: md.name, meDraftEmail: md.email, meDraftErrors: md.errors, onMeDraftNameChange: this.onMeDraftNameChange, onMeDraftEmailChange: this.onMeDraftEmailChange,
+      pwdCurrent: s.pwdForm.current, pwdNext: s.pwdForm.next, pwdConfirm: s.pwdForm.confirm, pwdErrors: s.pwdForm.errors,
+      onPwdCurrentChange: this.onPwdCurrentChange, onPwdNextChange: this.onPwdNextChange, onPwdConfirmChange: this.onPwdConfirmChange, submitPwdChange: this.submitPwdChange,
+
+      toastsRendered: s.toasts.map(t=>({ id:t.id, message:t.message, style:'background:var(--surface);border:1px solid '+(t.type==='error'?'#fecaca':'#e2e8f0')+';border-radius:8px;padding:12px 16px;font-size:14px;color:'+(t.type==='error'?'#b91c1c':'#0f172a')+';box-shadow:0 4px 12px rgba(15,23,42,0.08);min-width:240px;box-sizing:border-box' })),
+
+      hasModal: !!modal, modal: modal||{}, closeModal: this.closeModal, stopPropagation: this.stopPropagation,
+      modalIsConfirm: modalKind==='confirm', modalIsInvite: modalKind==='invite', modalIsChangeRole: modalKind==='change-role', modalIsPlanCreate: modalKind==='plan-create', modalIsPlanEdit: modalKind==='plan-edit', modalIsChangePlan: modalKind==='change-plan', modalIsCancelSubscription: modalKind==='cancel-subscription', modalIsInvoice: modalKind==='invoice',
+      modalConfirmBtnStyle,
+      submitInvite: this.submitInvite, onInviteNameChange: this.onInviteNameChange, onInviteEmailChange: this.onInviteEmailChange, onInviteRoleChange: this.onInviteRoleChange,
+      submitChangeRole: this.submitChangeRole, onChangeRoleSelect: this.onChangeRoleSelect,
+      submitCreatePlan: this.submitCreatePlan, onPlanCreateNameChange: this.onPlanCreateNameChange, onPlanCreatePriceChange: this.onPlanCreatePriceChange, onPlanCreateIntervalChange: this.onPlanCreateIntervalChange, onPlanCreateFeaturesChange: this.onPlanCreateFeaturesChange,
+      submitEditPlan: this.submitEditPlan, onPlanEditNameChange: this.onPlanEditNameChange, onPlanEditFeaturesChange: this.onPlanEditFeaturesChange,
+      changePlanCards, submitChangePlan: this.submitChangePlan,
+      submitCancelSubscription: this.submitCancelSubscription, onCancelReasonChange: this.onCancelReasonChange,
+      modalInvoiceAmount, modalInvoiceBadgeStyle, modalInvoiceBadgeLabel, modalInvoiceDate,
+
+      demoPanelOpen: s.demoPanelOpen, toggleDemoPanel: this.toggleDemoPanel, demoPanelToggleLabel: s.demoPanelOpen ? 'Close demo panel' : 'Demo: switch account', demoPanelToggleIcon: s.demoPanelOpen ? '✕' : '⚙', session,
+      rootClass: s.darkMode ? 'dark' : 'bg-anim', darkMode: s.darkMode, toggleDarkMode: this.toggleDarkMode, darkModeIcon: s.darkMode ? '☀' : '☾',
+    };
+  }
+}
+
+</script>
+</body>
+</html>

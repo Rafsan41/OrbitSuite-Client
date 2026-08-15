@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="width:100%;font-family:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap">
+    <h2 style="font-size:18px;font-weight:600;color:var(--text);margin:0;letter-spacing:-0.01em">{{ title }}</h2>
+    <sc-if value="{{ hasAction }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ onAction }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer" style-hover="background:#B85A24">{{ actionLabel }}</button>
+    </sc-if>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <sc-if value="{{ searchable }}" hint-placeholder-val="{{ false }}">
+        <input type="text" value="{{ searchValue }}" onChange="{{ onSearchChange }}" placeholder="{{ searchPlaceholder }}" style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:14px;width:220px;color:var(--text);outline:none" />
+      </sc-if>
+      <sc-if value="{{ hasFilter }}" hint-placeholder-val="{{ false }}">
+        <select value="{{ filterValue }}" onChange="{{ onFilterChange }}" style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:14px;color:var(--text);background:var(--surface);outline:none">
+          <sc-for list="{{ filterOptions }}" as="opt" hint-placeholder-count="3">
+            <option value="{{ opt.value }}">{{ opt.label }}</option>
+          </sc-for>
+        </select>
+      </sc-if>
+    </div>
+    <div style="display:flex;gap:4px;align-items:center">
+      <span style="font-size:11px;color:#94a3b8;margin-right:2px">Demo state</span>
+      <sc-for list="{{ demoStateOptions }}" as="ds" hint-placeholder-count="4">
+        <button onClick="{{ ds.onClick }}" style="{{ ds.style }}">{{ ds.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="border:1px solid var(--border);border-radius:8px;overflow-x:auto;background:var(--surface)">
+    <table style="width:100%;border-collapse:collapse;min-width:640px">
+      <thead style="background:var(--page-bg)">
+        <tr>
+          <sc-for list="{{ columns }}" as="col" hint-placeholder-count="4">
+            <th style="{{ col.thStyle }}">{{ col.label }}</th>
+          </sc-for>
+        </tr>
+      </thead>
+      <tbody>
+        <sc-if value="{{ isLoaded }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ rows }}" as="row" hint-placeholder-count="5">
+            <tr style="{{ row.trStyle }}" style-hover="background:var(--page-bg)" onClick="{{ row.onClick }}">
+              <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="4">
+                <td style="{{ cell.tdStyle }}">
+                  <sc-if value="{{ cell.isBadge }}" hint-placeholder-val="{{ false }}">
+                    <span style="{{ cell.badgeStyle }}">{{ cell.value }}</span>
+                  </sc-if>
+                  <sc-if value="{{ cell.isPlain }}" hint-placeholder-val="{{ true }}">
+                    {{ cell.value }}
+                  </sc-if>
+                  <sc-if value="{{ cell.isActions }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;gap:6px;justify-content:flex-end">
+                      <sc-for list="{{ cell.actions }}" as="act" hint-placeholder-count="2">
+                        <button onClick="{{ act.onClick }}" style="{{ act.style }}">{{ act.label }}</button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </td>
+              </sc-for>
+            </tr>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ skeletonRows }}" as="sr" hint-placeholder-count="5">
+            <tr style="border-bottom:1px solid var(--border-soft)">
+              <td colSpan="{{ columnCount }}" style="padding:14px 16px">
+                <div style="{{ sr.style }}"></div>
+              </td>
+            </tr>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+          <tr>
+            <td colSpan="{{ columnCount }}" style="padding:56px 16px;text-align:center">
+              <div style="font-size:14px;color:var(--text);font-weight:500;margin-bottom:4px">Couldn't load this data</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">The request failed. Check your connection and try again.</div>
+              <button onClick="{{ onRetry }}" style="border:1px solid var(--border);background:var(--surface);border-radius:6px;padding:8px 14px;font-size:13px;cursor:pointer;color:var(--text)">Retry</button>
+            </td>
+          </tr>
+        </sc-if>
+        <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+          <tr>
+            <td colSpan="{{ columnCount }}" style="padding:56px 16px;text-align:center">
+              <div style="font-size:14px;color:var(--text);font-weight:500;margin-bottom:4px">{{ emptyTitle }}</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">{{ emptyBody }}</div>
+              <sc-if value="{{ hasEmptyAction }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ onEmptyAction }}" style="background:#E37434;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer">{{ emptyActionLabel }}</button>
+              </sc-if>
+            </td>
+          </tr>
+        </sc-if>
+      </tbody>
+    </table>
+  </div>
+
+  <sc-if value="{{ isLoaded }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px">
+      <span style="font-size:12px;color:var(--text-muted)">{{ paginationLabel }}</span>
+      <div style="display:flex;gap:8px">
+        <button disabled="{{ prevDisabled }}" onClick="{{ onPrev }}" style="{{ prevBtnStyle }}">Previous</button>
+        <button disabled="{{ nextDisabled }}" onClick="{{ onNext }}" style="{{ nextBtnStyle }}">Next</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+</body>
+</html>
