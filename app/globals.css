@@ -1,26 +1,230 @@
 @import "tailwindcss";
 
+/* The design ships a `.dark` class toggle rather than relying on the OS setting,
+   so Tailwind's dark variant has to follow the class, not `prefers-color-scheme`. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Surface variables are transcribed verbatim from design/OrbitSuite.dc.html so
+   markup copied out of the design keeps working against the same var() names. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --surface: #ffffff;
+  --page-bg: #f8fafc;
+  --text: #0f172a;
+  --text-soft: #334155;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --border-soft: #f1f5f9;
+  --scrim-light: rgba(255, 255, 255, 0.65);
+  --scrim-strong: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.6);
+}
+
+.dark {
+  --surface: #1e293b;
+  --page-bg: #0f172a;
+  --text: #f1f5f9;
+  --text-soft: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --border-soft: #334155;
+  --scrim-light: rgba(15, 23, 42, 0.55);
+  --scrim-strong: rgba(30, 41, 59, 0.92);
+  --glass-border: rgba(148, 163, 184, 0.25);
+  background: var(--page-bg);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-page: var(--page-bg);
+  --color-ink: var(--text);
+  --color-ink-soft: var(--text-soft);
+  --color-ink-muted: var(--text-muted);
+  --color-line: var(--border);
+  --color-line-soft: var(--border-soft);
+  --color-scrim: var(--scrim-light);
+  --color-scrim-strong: var(--scrim-strong);
+  --color-glass: var(--glass-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  /* Terracotta. `500` is the brand colour — logo, headings, anything 24px+.
+     `600` is the button fill: white on #e37434 measures 3.08:1 and fails AA,
+     white on #b85a24 measures 4.67:1 and passes. */
+  --color-brand-50: #fcf2e5;
+  --color-brand-100: #fde8d6;
+  --color-brand-200: #fbd8b8;
+  --color-brand-300: #f6cba8;
+  --color-brand-500: #e37434;
+  --color-brand-600: #b85a24;
+  --color-brand-700: #99491c;
+
+  /* Teal — links, secondary actions, active nav. Never on the same element
+     as terracotta: terracotta means "act", teal means "navigate". */
+  --color-accent-50: #e6f2f2;
+  --color-accent-100: #cce5e5;
+  --color-accent-200: #a9d8d6;
+  --color-accent-600: #007979;
+  --color-accent-700: #005c5c;
+
+  /* Status triples. Twelve tokens cover all 18 backend enum values. */
+  --color-status-success-bg: #ecfdf5;
+  --color-status-success-fg: #047857;
+  --color-status-success-border: #a7f3d0;
+
+  --color-status-pending-bg: #fffbeb;
+  --color-status-pending-fg: #b45309;
+  --color-status-pending-border: #fde68a;
+
+  --color-status-failed-bg: #fef2f2;
+  --color-status-failed-fg: #b91c1c;
+  --color-status-failed-border: #fecaca;
+
+  --color-status-neutral-bg: #f8fafc;
+  --color-status-neutral-fg: #475569;
+  --color-status-neutral-border: #cbd5e1;
+
+  --color-status-warning-bg: #fff7ed;
+  --color-status-warning-fg: #c2410c;
+  --color-status-warning-border: #fed7aa;
+
+  --color-status-refund-bg: #f5f3ff;
+  --color-status-refund-fg: #6d28d9;
+  --color-status-refund-border: #ddd6fe;
+
+  --color-status-rollback-bg: #fff1f2;
+  --color-status-rollback-fg: #9f1239;
+  --color-status-rollback-border: #fecdd3;
+
+  --color-status-info-bg: #f0f9ff;
+  --color-status-info-fg: #0369a1;
+  --color-status-info-border: #bae6fd;
+
+  --color-status-expired-bg: #e6f2f2;
+  --color-status-expired-fg: #005c5c;
+  --color-status-expired-border: #a9d8d6;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page-bg);
+  color: var(--text);
+}
+
+a {
+  color: var(--color-accent-600);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-accent-700);
+  text-decoration: underline;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 3px rgba(227, 116, 52, 0.15);
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background: #0f172a;
+}
+
+::placeholder {
+  color: var(--text-muted);
+}
+
+/* Landing background: the cream/terracotta/teal brand gradient, slowly drifting.
+   Only ever used behind the public shell. */
+@keyframes bgMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-anim {
+  background: linear-gradient(120deg, #fcf2e5, #fcf2e5, #f6cba8, #a9d8d6, #fcf2e5);
+  background-size: 400% 400%;
+  animation: bgMove 22s ease-in-out infinite;
+}
+
+.dark .bg-anim {
+  background: var(--page-bg);
+  animation: none;
+}
+
+/* Hero cube. Pure CSS, so it renders in a server component. */
+@keyframes cubeSpin {
+  from {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+.cube-scene {
+  width: 110px;
+  height: 110px;
+  perspective: 600px;
+  margin: 0 auto 20px;
+}
+
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: cubeSpin 12s linear infinite;
+}
+
+.cube-face {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  opacity: 0.94;
+}
+
+.cube-face.f-front {
+  background: #e37434;
+  transform: translateZ(55px);
+}
+.cube-face.f-back {
+  background: #007979;
+  transform: rotateY(180deg) translateZ(55px);
+}
+.cube-face.f-right {
+  background: #f6cba8;
+  transform: rotateY(90deg) translateZ(55px);
+}
+.cube-face.f-left {
+  background: #a9d8d6;
+  transform: rotateY(-90deg) translateZ(55px);
+}
+.cube-face.f-top {
+  background: #fcf2e5;
+  transform: rotateX(90deg) translateZ(55px);
+}
+.cube-face.f-bottom {
+  background: #0f172a;
+  transform: rotateX(-90deg) translateZ(55px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-anim,
+  .cube {
+    animation: none;
+  }
 }
