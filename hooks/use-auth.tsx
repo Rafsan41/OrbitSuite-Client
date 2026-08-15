@@ -49,15 +49,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         staleTime: 5 * 60_000,
     });
 
-    // When refresh itself fails there is no way back — drop the cache so no
-    // tenant's data survives into the next session, then send them to login.
+    // When refresh fails, drop the cache so no tenant's data survives into the
+    // next session. Deliberately no redirect: on a public page "not signed in"
+    // is the normal state, and bouncing an anonymous visitor off the landing
+    // page to /login would be wrong. AppShell owns the redirect, because it is
+    // the only place that knows the route required a session.
+    //
+    // Note the predicate: clearing the whole cache would evict the session
+    // query itself, whose mounted observer would refetch, 401 again, and clear
+    // again — an endless refresh loop. Everything *except* the session goes.
     useEffect(() => {
         setSessionExpiredHandler(() => {
-            queryClient.clear();
-            router.replace("/login");
+            queryClient.removeQueries({
+                predicate: (query) => query.queryKey[0] !== queryKeys.session[0],
+            });
         });
         return () => setSessionExpiredHandler(null);
-    }, [queryClient, router]);
+    }, [queryClient]);
 
     const loginMutation = useMutation({
         mutationFn: async (vars: { email: string; password: string }) => {

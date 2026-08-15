@@ -30,9 +30,21 @@ export const registerSchema = z.object({
 
 export const forgotPasswordSchema = z.object({ email: emailSchema });
 
-export const resetPasswordSchema = z.object({ password: passwordSchema });
+/**
+ * The backend takes only `token` + `password`. The confirm field is a
+ * client-side typo guard on a value the user cannot see and cannot undo, so it
+ * is validated here and dropped before the request goes out.
+ */
+const passwordWithConfirmation = z
+    .object({ password: passwordSchema, confirmPassword: z.string() })
+    .refine((v) => v.password === v.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    });
 
-export const acceptInviteSchema = z.object({ password: passwordSchema });
+export const resetPasswordSchema = passwordWithConfirmation;
+
+export const acceptInviteSchema = passwordWithConfirmation;
 
 export const changePasswordSchema = z.object({
     currentPassword: z.string().min(1, "Current password is required"),
@@ -56,6 +68,15 @@ export const inviteSchema = z.object({
     role: z.enum(["ORG_ADMIN", "ORG_MEMBER"]),
 });
 
+export const contactSchema = z.object({
+    name: z.string().min(2, "At least 2 characters").max(100),
+    email: emailSchema,
+    message: z
+        .string()
+        .min(10, "Tell us a little more — at least 10 characters")
+        .max(2000, "At most 2000 characters"),
+});
+
 export const planSchema = z.object({
     name: z.string().min(2, "At least 2 characters").max(100),
     priceCents: z.coerce
@@ -75,4 +96,5 @@ export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
 export type ProfileValues = z.infer<typeof profileSchema>;
 export type OrganizationValues = z.infer<typeof organizationSchema>;
 export type InviteValues = z.infer<typeof inviteSchema>;
+export type ContactValues = z.infer<typeof contactSchema>;
 export type PlanValues = z.infer<typeof planSchema>;

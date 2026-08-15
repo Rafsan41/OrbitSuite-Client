@@ -101,13 +101,18 @@ api.interceptors.response.use(
         const isRefreshCall = config?.url?.includes("/auth/refresh");
         if (status === 401 && config && !config._retried && !isRefreshCall) {
             config._retried = true;
+            // A session can only *expire* if there was one. An anonymous
+            // visitor hitting /auth/me on the public landing page also lands
+            // here, and treating that as an expiry would tear down state that
+            // was never signed in.
+            const hadSession = accessToken !== null;
             try {
                 const token = await refreshAccessToken();
                 config.headers.set("Authorization", `Bearer ${token}`);
                 return api.request(config);
             } catch {
                 setAccessToken(null);
-                onSessionExpired?.();
+                if (hadSession) onSessionExpired?.();
             }
         }
 

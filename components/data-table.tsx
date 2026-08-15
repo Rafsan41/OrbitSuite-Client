@@ -1,8 +1,26 @@
 "use client";
 
+import { EmptyState, ErrorState } from "@/components/states";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import type { PageMeta } from "@/lib/types";
-import { EmptyState, ErrorState, Skeleton } from "./states";
-import { Button, Input, Select, cx } from "./ui";
+import { cn } from "@/lib/utils";
 
 export interface Column<T> {
     /** Stable identity for the React key — not necessarily a field name. */
@@ -45,13 +63,13 @@ export interface DataTableProps<T> {
     onPageChange?: (page: number) => void;
 }
 
-const HEADER_CELL =
-    "px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-ink-muted";
-
 /**
  * One table for every list in the product. Eight pages need a table with search,
  * filters, pagination and four states; eight bespoke implementations is where
  * this build would have run out of hours.
+ *
+ * shadcn's Table supplies the markup and spacing; the state handling, toolbar
+ * and pagination are ours, because shadcn deliberately ships no data table.
  */
 export function DataTable<T>({
     title,
@@ -97,7 +115,7 @@ export function DataTable<T>({
                             value={search.value}
                             onChange={(e) => search.onChange(e.target.value)}
                             placeholder={search.placeholder ?? "Search…"}
-                            className="w-55"
+                            className="w-56"
                             aria-label={search.placeholder ?? "Search"}
                         />
                     )}
@@ -105,115 +123,112 @@ export function DataTable<T>({
                         <Select
                             key={filter.label ?? index}
                             value={filter.value}
-                            onChange={(e) => filter.onChange(e.target.value)}
-                            className="w-auto"
-                            aria-label={filter.label ?? "Filter"}
+                            onValueChange={filter.onChange}
                         >
-                            {filter.options.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
+                            <SelectTrigger
+                                className="w-auto min-w-36"
+                                aria-label={filter.label ?? "Filter"}
+                            >
+                                <SelectValue placeholder={filter.label ?? "Filter"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {filter.options.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
                     ))}
                 </div>
             )}
 
-            <div className="overflow-x-auto rounded-lg border border-line bg-surface">
-                <table className="w-full min-w-160 border-collapse">
-                    <thead className="bg-page">
-                        <tr>
+            <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-foreground/10">
+                <Table className="min-w-160">
+                    <TableHeader className="bg-muted">
+                        <TableRow>
                             {columns.map((column) => (
-                                <th
+                                <TableHead
                                     key={column.id}
-                                    scope="col"
-                                    className={cx(
-                                        HEADER_CELL,
-                                        column.align === "right"
-                                            ? "text-right"
-                                            : "text-left",
+                                    className={cn(
+                                        "text-[11px] font-semibold tracking-wide uppercase",
+                                        column.align === "right" && "text-right",
                                     )}
                                 >
                                     {column.header}
-                                </th>
+                                </TableHead>
                             ))}
-                        </tr>
-                    </thead>
-                    <tbody>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         {isLoading &&
                             Array.from({ length: 5 }, (_, index) => (
-                                <tr
-                                    key={`skeleton-${index}`}
-                                    className="border-t border-line-soft"
-                                >
-                                    <td colSpan={columnCount} className="px-4 py-3.5">
+                                <TableRow key={`skeleton-${index}`}>
+                                    <TableCell colSpan={columnCount}>
                                         <Skeleton className="h-3 w-full" />
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             ))}
 
+                        {/* `!!error`, not `error` — a bare `unknown` inside a JSX
+                            expression widens the whole node to `unknown`. */}
                         {!isLoading && !!error && (
-                            <tr>
-                                <td colSpan={columnCount}>
+                            <TableRow>
+                                <TableCell colSpan={columnCount}>
                                     <ErrorState error={error} onRetry={onRetry} />
-                                </td>
-                            </tr>
+                                </TableCell>
+                            </TableRow>
                         )}
 
                         {!isLoading && !error && !hasRows && (
-                            <tr>
-                                <td colSpan={columnCount}>
+                            <TableRow>
+                                <TableCell colSpan={columnCount}>
                                     <EmptyState
                                         title={empty?.title ?? "Nothing here yet"}
                                         body={empty?.body}
                                         action={empty?.action}
                                     />
-                                </td>
-                            </tr>
+                                </TableCell>
+                            </TableRow>
                         )}
 
                         {!isLoading &&
                             !error &&
                             hasRows &&
                             rows.map((row) => (
-                                <tr
+                                <TableRow
                                     key={rowKey(row)}
                                     onClick={
                                         onRowClick ? () => onRowClick(row) : undefined
                                     }
-                                    className={cx(
-                                        "border-t border-line-soft",
-                                        onRowClick && "cursor-pointer hover:bg-page",
-                                    )}
+                                    className={cn(onRowClick && "cursor-pointer")}
                                 >
                                     {columns.map((column) => (
-                                        <td
+                                        <TableCell
                                             key={column.id}
-                                            className={cx(
-                                                "px-4 py-3.5 text-sm",
-                                                column.align === "right"
-                                                    ? "text-right"
-                                                    : "text-left",
+                                            className={cn(
+                                                "text-sm",
+                                                column.align === "right" && "text-right",
                                                 column.className,
                                             )}
                                         >
                                             {column.cell(row)}
-                                        </td>
+                                        </TableCell>
                                     ))}
-                                </tr>
+                                </TableRow>
                             ))}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
             </div>
 
             {meta && meta.total > 0 && !isLoading && !error && (
                 <div className="flex items-center justify-between pt-4">
-                    <span className="text-xs text-ink-muted">
+                    <span className="text-xs text-muted-foreground">
                         Showing {from}–{to} of {meta.total}
                     </span>
                     <div className="flex gap-2">
                         <Button
-                            variant="secondary"
+                            variant="outline"
                             size="sm"
                             disabled={meta.page <= 1}
                             onClick={() => onPageChange?.(meta.page - 1)}
@@ -221,7 +236,7 @@ export function DataTable<T>({
                             Previous
                         </Button>
                         <Button
-                            variant="secondary"
+                            variant="outline"
                             size="sm"
                             disabled={meta.page >= meta.totalPages}
                             onClick={() => onPageChange?.(meta.page + 1)}

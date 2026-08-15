@@ -1,4 +1,9 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+/* Lenis' own reset. Without it the page keeps native scrolling alongside the
+   smoothed one and the two compete. */
+@import "lenis/dist/lenis.css";
 
 /* The design ships a `.dark` class toggle rather than relying on the OS setting,
    so Tailwind's dark variant has to follow the class, not `prefers-color-scheme`. */
@@ -6,6 +11,19 @@
 
 /* Surface variables are transcribed verbatim from design/OrbitSuite.dc.html so
    markup copied out of the design keeps working against the same var() names. */
+/*
+ * Two vocabularies, one palette.
+ *
+ * The design export names its surfaces --surface / --text / --border; shadcn's
+ * components are written against --background / --foreground / --primary and
+ * cannot be restyled without forking every one of them. So the design tokens
+ * hold the actual colour values, and shadcn's names are declared as aliases of
+ * them. `shadcn add` can then drop a component in unmodified and it renders in
+ * the design's palette, in both themes, with nothing to patch by hand.
+ *
+ * Custom properties resolve lazily, so an alias may reference a token declared
+ * later in the file — including the @theme brand ramp below.
+ */
 :root {
   --surface: #ffffff;
   --page-bg: #f8fafc;
@@ -17,8 +35,49 @@
   --scrim-light: rgba(255, 255, 255, 0.65);
   --scrim-strong: rgba(255, 255, 255, 0.92);
   --glass-border: rgba(255, 255, 255, 0.6);
+
+  /* --- shadcn aliases --- */
+  --background: var(--page-bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface);
+  --popover-foreground: var(--text);
+  /* 600, not 500: this fill carries white text, and only 600 passes AA. */
+  --primary: var(--color-brand-600);
+  --primary-foreground: #ffffff;
+  --secondary: var(--surface);
+  --secondary-foreground: var(--text);
+  --muted: var(--border-soft);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--color-accent-50);
+  --accent-foreground: var(--color-accent-700);
+  --destructive: var(--color-status-failed-fg);
+  --input: var(--border);
+  /* Teal owns focus, so a ring never collides with a sienna button fill. */
+  --ring: var(--color-accent-600);
+  --chart-1: var(--color-brand-500);
+  --chart-2: var(--color-accent-600);
+  --chart-3: var(--color-brand-300);
+  --chart-4: var(--color-accent-200);
+  --chart-5: var(--color-brand-700);
+  /* 8px — the design's card radius. shadcn derives its smaller steps from this. */
+  --radius: 0.5rem;
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--text);
+  --sidebar-primary: var(--color-brand-600);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--color-accent-50);
+  --sidebar-accent-foreground: var(--color-accent-700);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--color-accent-600);
 }
 
+/*
+ * Only the design tokens are restated here. Every shadcn alias above is defined
+ * in terms of them, so it follows the theme for free — the exceptions below are
+ * the few that need a genuinely different value on a dark ground.
+ */
 .dark {
   --surface: #1e293b;
   --page-bg: #0f172a;
@@ -31,6 +90,14 @@
   --scrim-strong: rgba(30, 41, 59, 0.92);
   --glass-border: rgba(148, 163, 184, 0.25);
   background: var(--page-bg);
+
+  /* On a dark ground the pale teal wash inverts to the deep teal, and the
+     failed-status red has to lift to stay legible. */
+  --accent: var(--color-accent-700);
+  --accent-foreground: var(--color-accent-100);
+  --destructive: #f87171;
+  --sidebar-accent: var(--color-accent-700);
+  --sidebar-accent-foreground: var(--color-accent-100);
 }
 
 @theme inline {
@@ -44,21 +111,65 @@
   --color-scrim: var(--scrim-light);
   --color-scrim-strong: var(--scrim-strong);
   --color-glass: var(--glass-border);
+  /* `shadcn init` wrote `--font-sans: var(--font-sans)` here and left the root
+     layout alone, which resolves to nothing. Point it at the Geist variable the
+     layout actually defines. */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 @theme {
-  /* Terracotta. `500` is the brand colour — logo, headings, anything 24px+.
-     `600` is the button fill: white on #e37434 measures 3.08:1 and fails AA,
-     white on #b85a24 measures 4.67:1 and passes. */
+  /* Burnt sienna. `500` is the brand colour — logo, headings, anything 24px+.
+     `600` is the button fill, because `500` cannot carry text: white on
+     #e97451 measures 2.78:1 and fails AA, white on #b85a3c measures 4.60:1
+     and passes. `700` (6.27:1) is the hover.
+     `50` stays cream — it is the base of the landing gradient, not a tint. */
   --color-brand-50: #fcf2e5;
-  --color-brand-100: #fde8d6;
-  --color-brand-200: #fbd8b8;
-  --color-brand-300: #f6cba8;
-  --color-brand-500: #e37434;
-  --color-brand-600: #b85a24;
-  --color-brand-700: #99491c;
+  --color-brand-100: #fceeea;
+  --color-brand-200: #fadcd4;
+  --color-brand-300: #f6c7b9;
+  --color-brand-500: #e97451;
+  --color-brand-600: #b85a3c;
+  --color-brand-700: #99492f;
 
   /* Teal — links, secondary actions, active nav. Never on the same element
      as terracotta: terracotta means "act", teal means "navigate". */
@@ -106,78 +217,174 @@
   --color-status-expired-border: #a9d8d6;
 }
 
-body {
-  background: var(--page-bg);
-  color: var(--text);
+/*
+ * Inside `@layer base`, not unlayered.
+ *
+ * Unlayered rules beat every cascade layer, so an unlayered `a { color }` wins
+ * against `text-white` and `text-primary-foreground` from @layer utilities —
+ * which turned every button rendered as a link (`<Button asChild><Link>`) teal
+ * on its sienna fill. Layering it puts the default back where it belongs:
+ * beaten by any explicit utility, applied when there is none.
+ */
+@layer base {
+  a {
+    color: var(--color-accent-600);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-accent-700);
+    text-decoration: underline;
+  }
 }
 
-a {
-  color: var(--color-accent-600);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--color-accent-700);
-  text-decoration: underline;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
+/* shadcn's own controls carry `focus-visible:ring-ring`, so this only catches
+   bare inputs outside those components. */
+input:not([class*="ring-"]):focus,
+select:not([class*="ring-"]):focus,
+textarea:not([class*="ring-"]):focus {
   border-color: var(--color-brand-500);
-  box-shadow: 0 0 0 3px rgba(227, 116, 52, 0.15);
-}
-
-.dark input,
-.dark select,
-.dark textarea {
-  background: #0f172a;
+  box-shadow: 0 0 0 3px rgba(233, 116, 81, 0.15);
 }
 
 ::placeholder {
   color: var(--text-muted);
 }
 
-/* Landing background: the cream/terracotta/teal brand gradient, slowly drifting.
-   Only ever used behind the public shell. */
+/*
+ * The public shell's background: a drifting brand-coloured mesh with a fine dot
+ * grid over it.
+ *
+ * Four background layers on one element rather than stacked pseudo-elements —
+ * a pseudo-element would need its own stacking context to sit behind the
+ * children, and negative z-index against a painted parent background is exactly
+ * the kind of thing that breaks the moment a wrapper gains `transform`.
+ *
+ * Layer order (top first, as CSS paints them):
+ *   1  dot grid      — the texture
+ *   2  sienna bloom  — warm mass, upper left
+ *   3  teal bloom    — cool counterweight, upper right
+ *   4  base ramp     — the cream field everything sits on
+ */
 @keyframes bgMove {
+  /* The dot grid holds at `0 0` in every frame: it is a texture, and a texture
+     that slides reads as the page itself sliding. Only the blooms move. */
   0% {
-    background-position: 0% 50%;
+    background-position:
+      0 0,
+      12% 18%,
+      88% 12%,
+      0% 50%;
   }
   50% {
-    background-position: 100% 50%;
+    background-position:
+      0 0,
+      30% 42%,
+      66% 34%,
+      100% 50%;
   }
   100% {
-    background-position: 0% 50%;
+    background-position:
+      0 0,
+      12% 18%,
+      88% 12%,
+      0% 50%;
   }
 }
 
 .bg-anim {
-  background: linear-gradient(120deg, #fcf2e5, #fcf2e5, #f6cba8, #a9d8d6, #fcf2e5);
-  background-size: 400% 400%;
-  animation: bgMove 22s ease-in-out infinite;
+  background-image:
+    radial-gradient(circle, var(--pattern-dot) 1px, transparent 1px),
+    radial-gradient(38% 34% at 50% 50%, var(--bloom-warm) 0%, transparent 70%),
+    radial-gradient(34% 30% at 50% 50%, var(--bloom-cool) 0%, transparent 70%),
+    linear-gradient(120deg, #fcf2e5, #fdf6ec, #f6c7b9, #a9d8d6, #fcf2e5);
+  background-size:
+    22px 22px,
+    150% 150%,
+    150% 150%,
+    400% 400%;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  /* The resting composition, and what shows when motion is switched off.
+     Without it every layer defaults to `0% 0%` and the two blooms pile up in
+     the same corner. Matches the animation's first frame. */
+  background-position:
+    0 0,
+    12% 18%,
+    88% 12%,
+    0% 50%;
+  /* Deliberately not `background-attachment: fixed`: it forces a full repaint on
+     every scroll frame, which is the last thing to hand a smooth-scroll library
+     driving the page — and iOS ignores it anyway. The wrapper is already
+     full-height, so the layers cover the page without it. */
+  animation: bgMove 26s ease-in-out infinite;
+}
+
+:root {
+  --pattern-dot: rgba(15, 23, 42, 0.07);
+  --bloom-warm: rgba(233, 116, 81, 0.28);
+  --bloom-cool: rgba(0, 121, 121, 0.2);
+}
+
+/*
+ * Dark keeps the same four layers rather than dropping to a flat fill, so the
+ * two themes are the same design at different weights instead of two designs.
+ * The blooms carry it — a cream ramp cannot survive on a dark ground, so the
+ * base becomes the page colour and the brand hues do the work.
+ */
+.dark {
+  --pattern-dot: rgba(226, 232, 240, 0.05);
+  --bloom-warm: rgba(233, 116, 81, 0.16);
+  --bloom-cool: rgba(0, 121, 121, 0.18);
 }
 
 .dark .bg-anim {
-  background: var(--page-bg);
-  animation: none;
+  background-image:
+    radial-gradient(circle, var(--pattern-dot) 1px, transparent 1px),
+    radial-gradient(38% 34% at 50% 50%, var(--bloom-warm) 0%, transparent 70%),
+    radial-gradient(34% 30% at 50% 50%, var(--bloom-cool) 0%, transparent 70%),
+    linear-gradient(120deg, #0f172a, #131e36, #1b2540, #12233a, #0f172a);
 }
 
-/* Hero cube. Pure CSS, so it renders in a server component. */
-@keyframes cubeSpin {
-  from {
-    transform: rotateX(0deg) rotateY(0deg);
-  }
-  to {
-    transform: rotateX(360deg) rotateY(360deg);
-  }
+/*
+ * The same dot grid, static, for the signed-in shell. Cards and tables sit on
+ * solid `bg-card` above it, so the texture reads only in the gutters — enough
+ * to tie the two halves of the product together without putting a moving
+ * gradient behind a page of financial data.
+ */
+.bg-pattern {
+  background-image: radial-gradient(circle, var(--pattern-dot) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
+/*
+ * Hero cube. The geometry is CSS; GSAP drives the rotation (see
+ * components/spinning-cube.tsx).
+ *
+ * One size variable feeds both the face dimensions and the translateZ that
+ * pushes each face out to the surface — they are the same number by definition,
+ * and letting them drift apart is what turns a cube into a box.
+ */
 .cube-scene {
-  width: 110px;
-  height: 110px;
-  perspective: 600px;
-  margin: 0 auto 20px;
+  /* Scales with the viewport instead of a fixed size: 192px is right on a
+     desktop hero and overwhelming on a 375px phone, where it would crowd out
+     the headline it is supposed to introduce. */
+  --cube-size: clamp(132px, 15vw, 192px);
+  --cube-half: calc(var(--cube-size) / 2);
+  width: var(--cube-size);
+  height: var(--cube-size);
+  /* Tied to the size rather than fixed. A constant perspective against a
+     growing cube reads as an ever-wider lens — the faces splay and it stops
+     looking like a solid. Five times the edge keeps the projection constant. */
+  perspective: calc(var(--cube-size) * 5);
+  /*
+   * A spinning cube sweeps a circle of its own diagonal, not its edge — up to
+   * about 1.7x the box it is declared as, and perspective pushes the near
+   * corner out further still. The element only reserves `--cube-size`, so
+   * without this clearance the corners swing straight through the headline
+   * below. Reserved as margin rather than a taller box so the cube stays
+   * optically centred in the space it occupies.
+   */
+  margin: calc(var(--cube-size) * 0.2) auto calc(var(--cube-size) * 0.45);
 }
 
 .cube {
@@ -185,46 +392,64 @@ textarea:focus {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  animation: cubeSpin 12s linear infinite;
+  /* The resting angle, and the pose it keeps if motion is switched off. Never
+     face-on: a cube viewed square-on is indistinguishable from a flat square,
+     which is exactly how this read before. Three faces stay visible. */
+  transform: rotateX(-22deg) rotateY(-34deg);
 }
 
 .cube-face {
   position: absolute;
-  width: 110px;
-  height: 110px;
+  inset: 0;
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 6px;
   opacity: 0.94;
 }
 
 .cube-face.f-front {
-  background: #e37434;
-  transform: translateZ(55px);
+  background: #e97451;
+  transform: translateZ(var(--cube-half));
 }
 .cube-face.f-back {
   background: #007979;
-  transform: rotateY(180deg) translateZ(55px);
+  transform: rotateY(180deg) translateZ(var(--cube-half));
 }
 .cube-face.f-right {
-  background: #f6cba8;
-  transform: rotateY(90deg) translateZ(55px);
+  background: #f6c7b9;
+  transform: rotateY(90deg) translateZ(var(--cube-half));
 }
 .cube-face.f-left {
   background: #a9d8d6;
-  transform: rotateY(-90deg) translateZ(55px);
+  transform: rotateY(-90deg) translateZ(var(--cube-half));
 }
 .cube-face.f-top {
   background: #fcf2e5;
-  transform: rotateX(90deg) translateZ(55px);
+  transform: rotateX(90deg) translateZ(var(--cube-half));
 }
 .cube-face.f-bottom {
   background: #0f172a;
-  transform: rotateX(-90deg) translateZ(55px);
+  transform: rotateX(-90deg) translateZ(var(--cube-half));
 }
 
+/* The cube is deliberately absent here: its motion is GSAP's, guarded in the
+   component, and its resting transform already reads as a 3D object. */
 @media (prefers-reduced-motion: reduce) {
-  .bg-anim,
-  .cube {
+  .bg-anim {
     animation: none;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
   }
 }

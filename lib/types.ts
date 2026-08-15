@@ -7,10 +7,13 @@ export type OrgStatus =
     | "SUSPENDED"
     | "CANCELLED";
 
+// Mirrors the Prisma SubscriptionStatus enum, which is deliberately not the
+// same set as OrgStatus: a subscription can be FAILED but never TRIAL, and an
+// organization can be TRIAL but never FAILED.
 export type SubscriptionStatus =
     | "ACTIVE"
     | "PENDING"
-    | "TRIAL"
+    | "FAILED"
     | "CANCELLED"
     | "EXPIRED";
 
@@ -75,13 +78,71 @@ export interface Session {
 export interface Organization {
     id: string;
     name: string;
-    contactEmail: string;
+    /** Nullable in the schema — organizations created before billing details. */
+    contactEmail: string | null;
     billingEmail?: string | null;
     status: OrgStatus;
     createdAt: string;
     memberCount?: number;
     plan?: Plan | null;
     subscriptionStatus?: SubscriptionStatus | null;
+}
+
+/**
+ * `GET /organizations` flattens the row for the table: `plan` is the plan *name*
+ * here, not the object, because the endpoint selects only what the list renders.
+ * Distinct from `Organization` so a page cannot reach for `plan.priceCents` on a
+ * value that is a string.
+ */
+export interface OrganizationListRow {
+    id: string;
+    name: string;
+    contactEmail: string | null;
+    status: OrgStatus;
+    createdAt: string;
+    memberCount: number;
+    plan: string | null;
+    subscriptionStatus: SubscriptionStatus | null;
+}
+
+/** `GET /organizations/:id` — the Platform Admin detail view, fully expanded. */
+export interface OrganizationDetail {
+    id: string;
+    name: string;
+    contactEmail: string | null;
+    billingEmail: string | null;
+    status: OrgStatus;
+    createdAt: string;
+    users: Member[];
+    /** The raw subscription row with its plan joined — no derived fields. */
+    subscription: {
+        id: string;
+        status: SubscriptionStatus;
+        currentPeriodEnd: string | null;
+        stripeSubscriptionId: string | null;
+        createdAt: string;
+        updatedAt: string;
+        plan: Plan;
+    } | null;
+    payments: (Payment & {
+        subscription: { id: string; status: SubscriptionStatus } | null;
+    })[];
+    /** Capped at the 50 most recent by the endpoint. */
+    transactions: OrganizationTransaction[];
+}
+
+/**
+ * Transactions as the organization detail endpoint returns them — raw rows, so
+ * `metadata` rather than the derived `description` the transactions module adds.
+ */
+export interface OrganizationTransaction {
+    id: string;
+    type: string;
+    status: TransactionStatus;
+    amountCents: number;
+    paymentId: string | null;
+    metadata: Record<string, unknown> | null;
+    createdAt: string;
 }
 
 export interface Member {
@@ -127,18 +188,45 @@ export interface Transaction {
     organization?: Pick<Organization, "id" | "name"> | null;
 }
 
+/** The plan fields checkout returns — a `select`, not a whole `Plan`. */
+export interface CheckoutPlan {
+    name: string;
+    priceCents: number;
+}
+
 export interface CheckoutStatus {
-    subscriptionStatus: SubscriptionStatus | null;
+    subscriptionStatus: SubscriptionStatus;
     organizationStatus: OrgStatus;
-    plan: Plan | null;
+    plan: CheckoutPlan | null;
     canRetry: boolean;
+}
+
+export interface CheckoutSession {
+    /** Stripe can return null; the caller must treat that as a failure. */
+    checkoutUrl: string | null;
+    sessionId: string;
+    plan: CheckoutPlan & { billingInterval: "MONTH" | "YEAR" };
+}
+
+/** `POST /auth/register` — the refresh token is a cookie, so it isn't here. */
+export interface RegisterResult {
+    user: SessionUser;
+    organization: SessionOrganization;
+    subscription: { id: string; status: SubscriptionStatus };
+    plan: { id: string; name: string; priceCents: number };
+    accessToken: string;
 }
 
 export interface PlatformStats {
     organizations: {
         total: number;
         byStatus: Partial<Record<OrgStatus, number>>;
-        recentSignups: { id: string; name: string; createdAt: string }[];
+        recentSignups: {
+            id: string;
+            name: string;
+            status: OrgStatus;
+            createdAt: string;
+        }[];
     };
     users: { total: number };
     subscriptions: {

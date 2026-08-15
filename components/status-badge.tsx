@@ -1,5 +1,6 @@
+import { Badge } from "@/components/ui/badge";
 import { humanize } from "@/lib/format";
-import { cx } from "./ui";
+import { cn } from "@/lib/utils";
 
 /**
  * The backend exposes 18 status values across five Prisma enums. They collapse
@@ -64,16 +65,19 @@ export function StatusBadge({
     // unstyled string — a new backend enum value should look odd, not vanish.
     const token: StatusToken = STATUS_TOKENS[status as KnownStatus] ?? "neutral";
 
+    // shadcn's Badge supplies the shape, sizing and icon handling; `variant`
+    // is overridden because its four variants are semantic-neutral and these
+    // nine carry specific meaning that has to survive a greyscale print.
     return (
-        <span
-            className={cx(
-                "inline-flex items-center rounded-full border px-2.5 py-0.5",
-                "text-[11px] font-medium whitespace-nowrap",
+        <Badge
+            variant="outline"
+            className={cn(
+                "rounded-full border px-2.5 py-0.5 text-[11px] font-medium",
                 TOKEN_CLASSES[token],
                 className,
             )}
         >
             {humanize(status)}
-        </span>
+        </Badge>
     );
 }

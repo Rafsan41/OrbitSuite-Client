@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { ApiError } from "./api-client";
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
@@ -33,16 +33,9 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
     return (
         <QueryClientProvider client={client}>
             {children}
-            <Toaster
-                position="top-right"
-                toastOptions={{
-                    style: {
-                        background: "var(--surface)",
-                        color: "var(--text)",
-                        border: "1px solid var(--border)",
-                    },
-                }}
-            />
+            {/* shadcn's wrapper already maps sonner onto the popover tokens and
+                follows next-themes, so only placement is set here. */}
+            <Toaster position="top-right" />
         </QueryClientProvider>
     );
 }

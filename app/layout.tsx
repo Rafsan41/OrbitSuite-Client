@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
+import { SmoothScroll } from "@/components/smooth-scroll";
 import { AuthProvider } from "@/hooks/use-auth";
 import { QueryProvider } from "@/lib/query-provider";
 import "./globals.css";
@@ -24,33 +26,35 @@ export const metadata: Metadata = {
     description: "Subscription infrastructure for multi-tenant SaaS.",
 };
 
-/**
- * Applies the stored theme before first paint. Without this the page renders
- * light, then flips to dark once React hydrates.
- */
-const THEME_SCRIPT = `
-try {
-  var stored = localStorage.getItem("orbitsuite-theme");
-  var dark = stored ? stored === "dark"
-    : window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (dark) document.documentElement.classList.add("dark");
-} catch (e) {}
-`;
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
     return (
+        // `suppressHydrationWarning` is required by next-themes: it writes the
+        // theme class onto <html> before React hydrates, so the server markup
+        // and the client's first read legitimately differ.
         <html
             lang="en"
             suppressHydrationWarning
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
         >
-            <head>
-                <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-            </head>
             <body className="min-h-full font-sans">
-                <QueryProvider>
-                    <AuthProvider>{children}</AuthProvider>
-                </QueryProvider>
+                {/*
+                 * next-themes replaces the inline pre-paint script this file used
+                 * to carry: it injects an equivalent one, owns the storage key,
+                 * and follows the OS setting until the user picks a side.
+                 * shadcn's Toaster reads the same context to theme itself.
+                 */}
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    storageKey="orbitsuite-theme"
+                    disableTransitionOnChange
+                >
+                    <SmoothScroll />
+                    <QueryProvider>
+                        <AuthProvider>{children}</AuthProvider>
+                    </QueryProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

@@ -19,7 +19,7 @@ root, so design source there would ship to end users.
 
 ```
 60%  cream       #FCF2E5   page background
-30%  terracotta  #E37434   primary actions, brand presence
+30%  burnt sienna  #E97451   primary actions, brand presence
 10%  teal        #007979   links, secondary actions, active nav
 ```
 
@@ -43,13 +43,13 @@ Tailwind utilities.
 
 ```css
 :root {
-  --page-bg:     #fcf2e5; /* cream â€” the 60% */
-  --surface:     #ffffff; /* cards sit on the cream */
+  --page-bg: #fcf2e5; /* cream â€” the 60% */
+  --surface: #ffffff; /* cards sit on the cream */
   --surface-alt: #fffbf5;
-  --text:        #1c1917;
-  --text-soft:   #44403c;
-  --text-muted:  #78716c;
-  --border:      #ebdfce; /* warm, derived from the cream */
+  --text: #1c1917;
+  --text-soft: #44403c;
+  --text-muted: #78716c;
+  --border: #ebdfce; /* warm, derived from the cream */
   --border-soft: #f5eadb;
 }
 
@@ -57,20 +57,20 @@ Tailwind utilities.
    do NOT build a theme toggle, that is unrequested scope. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --page-bg:     #1c1917;
-    --surface:     #292524;
+    --page-bg: #1c1917;
+    --surface: #292524;
     --surface-alt: #211d1b;
-    --text:        #fafaf9;
-    --text-soft:   #d6d3d1;
-    --text-muted:  #a8a29e;
-    --border:      #44403c;
+    --text: #fafaf9;
+    --text-soft: #d6d3d1;
+    --text-muted: #a8a29e;
+    --border: #44403c;
     --border-soft: #292524;
   }
 }
 
 @theme {
   /* Terracotta â€” the 30%. Primary actions. */
-  --color-brand-50:  #fcf2e5;
+  --color-brand-50: #fcf2e5;
   --color-brand-100: #fde8d6;
   --color-brand-200: #fbd8b8;
   --color-brand-300: #f6cba8;
@@ -79,7 +79,7 @@ Tailwind utilities.
   --color-brand-700: #99491c; /* hover / active */
 
   /* Teal â€” the 10%. Links, secondary actions, active nav. */
-  --color-accent-50:  #e6f2f2;
+  --color-accent-50: #e6f2f2;
   --color-accent-100: #cce5e5;
   --color-accent-200: #a9d8d6;
   --color-accent-600: #007979;
@@ -136,11 +136,11 @@ Also override shadcn's primary and ring:
 
 ### Contrast â€” measured, not assumed
 
-| Combination | Ratio | Verdict |
-|---|---|---|
-| White on `#e37434` | **3.08:1** | âœ— fails AA for 14px text |
-| White on `#b85a24` | **4.67:1** | âœ“ passes AA |
-| White on `#007979` | **5.25:1** | âœ“ passes AA |
+| Combination        | Ratio      | Verdict                               |
+| ------------------ | ---------- | ------------------------------------- |
+| White on `#e37434` | **3.08:1** | âœ— fails AA for 14px text            |
+| White on `#b85a24` | **4.67:1** | âœ“ passes AA                         |
+| White on `#007979` | **5.25:1** | âœ“ passes AA                         |
 | `#007979` on cream | **4.75:1** | âœ“ passes AA â€” teal links are safe |
 | `#e37434` on cream | **2.79:1** | âœ— never use terracotta as body text |
 
@@ -163,10 +163,10 @@ unique tokens. This mapping is exhaustive; every status must resolve.
 | `failed`   | `FAILED`               | Something went wrong                          |
 | `neutral`  | `CANCELLED`, `REMOVED` | Intentional end-state, **not** an error       |
 | `warning`  | `SUSPENDED`            | Admin action, distinct from a payment failure |
-| `refund`   | `REFUNDED`             | Money returned â€” reversal, not failure        |
+| `refund`   | `REFUNDED`             | Money returned â€” reversal, not failure      |
 | `rollback` | `ROLLED_BACK`          | Transaction reversed by the system            |
 | `info`     | `INVITED`, `TRIAL`     | Provisional, awaiting the user                |
-| `expired`  | `EXPIRED`              | Lapsed period â€” time-based, not a failure     |
+| `expired`  | `EXPIRED`              | Lapsed period â€” time-based, not a failure   |
 
 Three choices to preserve:
 
@@ -237,16 +237,16 @@ greyscale screenshot of the submission must still be readable.
 
 Keep the `Geist` font already wired in `layout.tsx`. One scale, no exceptions:
 
-| Use                  | Classes                                                      |
-| -------------------- | ------------------------------------------------------------ |
-| Page title           | `text-2xl font-semibold tracking-tight`                      |
-| Section heading      | `text-lg font-semibold`                                      |
-| Card title           | `text-sm font-semibold`                                      |
-| Body                 | `text-sm`                                                    |
+| Use                  | Classes                                                           |
+| -------------------- | ----------------------------------------------------------------- |
+| Page title           | `text-2xl font-semibold tracking-tight`                           |
+| Section heading      | `text-lg font-semibold`                                           |
+| Card title           | `text-sm font-semibold`                                           |
+| Body                 | `text-sm`                                                         |
 | Table header         | `text-xs font-medium uppercase tracking-wide text-[--text-muted]` |
-| Table cell           | `text-sm`                                                    |
+| Table cell           | `text-sm`                                                         |
 | Muted / helper       | `text-xs text-[--text-muted]`                                     |
-| Numeric (money, IDs) | add `tabular-nums`                                           |
+| Numeric (money, IDs) | add `tabular-nums`                                                |
 
 **Money is `text-[--text] tabular-nums`, never coloured.** Green revenue and red
 failures make a billing table look like a stock ticker. Colour lives in the badge;
@@ -306,4 +306,3 @@ primary action if there is one. No illustrations.
    a bug.
 7. **WCAG AA (4.5:1) minimum.** Every combination above already clears it on
    white â€” do not substitute lighter foregrounds.
-

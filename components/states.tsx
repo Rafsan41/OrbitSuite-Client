@@ -1,14 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError } from "@/lib/api-client";
-import { Button, cx } from "./ui";
-
-export function Skeleton({ className }: { className?: string }) {
-    return (
-        <div
-            className={cx("animate-pulse rounded bg-line-soft", className)}
-            aria-hidden
-        />
-    );
-}
 
 export function LoadingState({ label = "Loading…" }: { label?: string }) {
     return (
@@ -44,14 +36,14 @@ export function ErrorState({
 
     return (
         <div className="px-4 py-14 text-center">
-            <p className="mb-1 text-sm font-medium text-ink">
+            <p className="mb-1 text-sm font-medium">
                 {forbidden
                     ? "You don't have access to this"
                     : "Couldn't load this data"}
             </p>
-            <p className="mb-4 text-[13px] text-ink-muted">{message}</p>
+            <p className="mb-4 text-[13px] text-muted-foreground">{message}</p>
             {onRetry && !forbidden && (
-                <Button variant="secondary" size="sm" onClick={onRetry}>
+                <Button variant="outline" size="sm" onClick={onRetry}>
                     Retry
                 </Button>
             )}
@@ -70,8 +62,10 @@ export function EmptyState({
 }) {
     return (
         <div className="px-4 py-14 text-center">
-            <p className="mb-1 text-sm font-medium text-ink">{title}</p>
-            {body && <p className="mb-4 text-[13px] text-ink-muted">{body}</p>}
+            <p className="mb-1 text-sm font-medium">{title}</p>
+            {body && (
+                <p className="mb-4 text-[13px] text-muted-foreground">{body}</p>
+            )}
             {action}
         </div>
     );

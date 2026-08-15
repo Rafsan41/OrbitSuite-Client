@@ -1,52 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-const STORAGE_KEY = "orbitsuite-theme";
+import { MoonIcon, SunIcon } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useSyncExternalStore } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
- * Toggles the `.dark` class the design's palette hangs off. The initial class is
- * set by the inline script in the root layout — this only handles user changes,
- * so there is no flash on load.
+ * True once hydrated, false during SSR and the first client render — expressed
+ * as an external store rather than a `useState` + `useEffect` pair, which reads
+ * as a cascading render to the React lint and to the compiler.
+ */
+const neverChanges = () => () => {};
+const useIsHydrated = () =>
+    useSyncExternalStore(
+        neverChanges,
+        () => true,
+        () => false,
+    );
+
+/**
+ * Flips between light and dark. next-themes owns the `.dark` class, the storage
+ * key and the pre-paint script, so this is only the control.
  */
 export function ThemeToggle({ className }: { className?: string }) {
-    const [isDark, setIsDark] = useState(false);
+    const { resolvedTheme, setTheme } = useTheme();
 
-    // Read the applied class rather than storage: the script may have chosen
-    // dark from the OS preference with nothing stored yet.
-    useEffect(() => {
-        setIsDark(document.documentElement.classList.contains("dark"));
-    }, []);
+    // `resolvedTheme` is undefined on the server and on the very first client
+    // render, because the answer lives in localStorage and the OS. Rendering an
+    // icon before it resolves would guess wrong half the time and visibly flip
+    // after hydration, so the button stays iconless until it is known.
+    const mounted = useIsHydrated();
 
-    const toggle = () => {
-        const next = !isDark;
-        setIsDark(next);
-        document.documentElement.classList.toggle("dark", next);
-        try {
-            localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
-        } catch {
-            // Private-browsing modes reject writes. Losing the preference on
-            // reload is acceptable; breaking the toggle is not.
-        }
-    };
+    const isDark = resolvedTheme === "dark";
+    const label = isDark ? "Switch to light mode" : "Switch to dark mode";
 
     return (
-        <button
-            type="button"
-            onClick={toggle}
-            aria-pressed={isDark}
-            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            className={
-                "flex h-8 w-8 cursor-pointer items-center justify-center rounded-md " +
-                "border border-line bg-transparent text-sm text-ink-soft " +
-                "hover:text-ink " +
-                (className ?? "")
-            }
+        <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            aria-pressed={mounted ? isDark : undefined}
+            title={mounted ? label : undefined}
+            className={cn(className)}
         >
-            <span aria-hidden>{isDark ? "☀" : "☾"}</span>
-            <span className="sr-only">
-                {isDark ? "Switch to light mode" : "Switch to dark mode"}
-            </span>
-        </button>
+            {mounted && (isDark ? <SunIcon /> : <MoonIcon />)}
+            <span className="sr-only">{mounted ? label : "Toggle theme"}</span>
+        </Button>
     );
 }

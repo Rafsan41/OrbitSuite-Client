@@ -1,14 +1,18 @@
 "use client";
 
+import { MenuIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LoadingState } from "@/components/states";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE_LABELS } from "@/lib/format";
 import type { Role } from "@/lib/types";
-import { LoadingState } from "./states";
-import { ThemeToggle } from "./theme-toggle";
-import { cx } from "./ui";
+import { cn } from "@/lib/utils";
 
 interface NavItem {
     href: string;
@@ -88,72 +92,85 @@ export function AppShell({
             ? pathname.startsWith(`${href}/`)
             : false);
 
+    const nav = (
+        <>
+            <div>
+                <p className="px-3 text-base font-bold tracking-tight">OrbitSuite</p>
+                <p className="mb-5 px-3 text-[11px] tracking-wide text-muted-foreground uppercase">
+                    {ROLE_LABELS[session.user.role]}
+                </p>
+
+                <nav className="flex flex-col gap-0.5">
+                    {items.map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => setNavOpen(false)}
+                            aria-current={isActive(item.href) ? "page" : undefined}
+                            className={cn(
+                                "rounded-lg px-3 py-2 text-sm no-underline hover:no-underline",
+                                isActive(item.href)
+                                    ? "bg-accent font-medium text-accent-foreground"
+                                    : "text-foreground/75 hover:bg-muted hover:text-foreground",
+                            )}
+                        >
+                            {item.label}
+                        </Link>
+                    ))}
+                </nav>
+            </div>
+
+            <div>
+                <Separator className="mb-4" />
+                <p className="px-3 text-[13px] font-medium">{session.user.name}</p>
+                <p className="mb-3 overflow-hidden px-3 text-xs text-ellipsis whitespace-nowrap text-muted-foreground">
+                    {session.user.email}
+                </p>
+                <div className="mb-2 flex items-center gap-2 px-3">
+                    <ThemeToggle className="size-7" />
+                    <span className="text-xs text-muted-foreground">Dark mode</span>
+                </div>
+                <Button
+                    variant="ghost"
+                    className="w-full justify-start px-3 font-normal"
+                    onClick={logout}
+                >
+                    Log out
+                </Button>
+            </div>
+        </>
+    );
+
     return (
-        <div className="flex min-h-screen">
-            <aside
-                className={cx(
-                    "flex w-60 shrink-0 flex-col justify-between border-r border-line",
-                    "bg-surface px-4 py-6 md:sticky md:top-0 md:h-screen",
-                    navOpen ? "fixed inset-y-0 left-0 z-50" : "hidden md:flex",
-                )}
-            >
-                <div>
-                    <p className="px-3 text-base font-bold tracking-tight">
-                        OrbitSuite
-                    </p>
-                    <p className="mb-5 px-3 text-[11px] tracking-wide text-ink-muted uppercase">
-                        {ROLE_LABELS[session.user.role]}
-                    </p>
-
-                    <nav className="flex flex-col gap-0.5">
-                        {items.map((item) => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setNavOpen(false)}
-                                aria-current={isActive(item.href) ? "page" : undefined}
-                                className={cx(
-                                    "rounded-md px-3 py-2 text-sm no-underline hover:no-underline",
-                                    isActive(item.href)
-                                        ? "bg-accent-50 font-medium text-accent-700"
-                                        : "text-ink-soft hover:bg-page hover:text-ink",
-                                )}
-                            >
-                                {item.label}
-                            </Link>
-                        ))}
-                    </nav>
-                </div>
-
-                <div className="border-t border-line-soft pt-4">
-                    <p className="px-3 text-[13px] font-medium">{session.user.name}</p>
-                    <p className="mb-3 overflow-hidden px-3 text-xs text-ellipsis whitespace-nowrap text-ink-muted">
-                        {session.user.email}
-                    </p>
-                    <div className="mb-2 flex items-center gap-2 px-3">
-                        <ThemeToggle className="h-7 w-7" />
-                        <span className="text-xs text-ink-muted">Dark mode</span>
-                    </div>
-                    <button
-                        type="button"
-                        onClick={logout}
-                        className="w-full cursor-pointer rounded-md px-3 py-2 text-left text-[13px] text-ink-soft hover:bg-page hover:text-ink"
-                    >
-                        Log out
-                    </button>
-                </div>
+        // The static half of the public shell's texture — same grid, same
+        // spacing, no motion. Cards and tables paint over it, so it shows only
+        // in the gutters.
+        <div className="bg-pattern flex min-h-screen">
+            {/* Two renderings of one nav rather than one that repositions: the
+                mobile copy needs Sheet's focus trap and dismiss behaviour, and
+                the desktop copy has to stay in the document flow beside the
+                content so the two columns actually sit side by side. */}
+            <aside className="hidden w-64 shrink-0 flex-col justify-between border-r border-border bg-card px-4 py-6 md:sticky md:top-0 md:flex md:h-screen">
+                {nav}
             </aside>
 
             <div className="min-w-0 flex-1">
-                <button
-                    type="button"
-                    onClick={() => setNavOpen((open) => !open)}
-                    className="m-4 cursor-pointer rounded-md border border-line px-3 py-2 text-sm md:hidden"
-                    aria-expanded={navOpen}
-                >
-                    {navOpen ? "Close menu" : "Menu"}
-                </button>
-                <div className="mx-auto max-w-320 p-8">{children}</div>
+                <Sheet open={navOpen} onOpenChange={setNavOpen}>
+                    <SheetTrigger asChild>
+                        <Button variant="outline" size="icon" className="m-4 md:hidden">
+                            <MenuIcon />
+                            <span className="sr-only">Open menu</span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-64 px-4 py-6">
+                        <SheetTitle className="sr-only">Navigation</SheetTitle>
+                        <div className="flex h-full flex-col justify-between">{nav}</div>
+                    </SheetContent>
+                </Sheet>
+
+                <div className="mx-auto w-full max-w-7xl px-6 py-8 md:px-8">
+                    {children}
+                </div>
             </div>
         </div>
     );
