@@ -228,6 +228,8 @@ export interface CurrentSubscription {
 /** `GET /payments` — billing history for the caller's own organization. */
 export interface PaymentListRow {
     id: string;
+    /** Derived server-side, so the list and the PDF always agree. */
+    invoiceNumber: string;
     amountCents: number;
     currency: string;
     status: PaymentStatus;

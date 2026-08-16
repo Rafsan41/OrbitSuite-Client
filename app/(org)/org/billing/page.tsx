@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { type Column, DataTable } from "@/components/data-table";
+import { InvoiceDownloadButton } from "@/components/invoice-download-button";
 import { PageHeader } from "@/components/patterns";
 import { StatusBadge } from "@/components/status-badge";
 import { getList } from "@/lib/api-client";
@@ -20,6 +21,15 @@ const columns: Column<PaymentListRow>[] = [
         header: "Date",
         cell: (row) => (
             <span className="whitespace-nowrap">{formatDateTime(row.createdAt)}</span>
+        ),
+    },
+    {
+        id: "invoiceNumber",
+        header: "Invoice",
+        cell: (row) => (
+            <span className="font-mono text-xs text-muted-foreground">
+                {row.invoiceNumber}
+            </span>
         ),
     },
     {
@@ -45,6 +55,17 @@ const columns: Column<PaymentListRow>[] = [
             <span className="font-medium tabular-nums">
                 {formatMoney(row.amountCents, row.currency)}
             </span>
+        ),
+    },
+    {
+        id: "invoice",
+        header: "",
+        align: "right",
+        cell: (row) => (
+            <InvoiceDownloadButton
+                paymentId={row.id}
+                invoiceNumber={row.invoiceNumber}
+            />
         ),
     },
 ];

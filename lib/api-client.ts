@@ -57,10 +57,19 @@ export class ApiError extends Error {
 type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
 
 /**
- * Concurrent 401s must not each fire their own refresh — the backend rotates the
- * refresh token on every use, so a second refresh would present a token the
- * first one already invalidated and log the user out. All waiters share one
- * in-flight promise instead.
+ * Concurrent 401s share one in-flight refresh instead of each firing their own.
+ *
+ * A page that fires five parallel requests on load would otherwise send five
+ * refreshes, each spending the cookie and each writing a new one — the last
+ * response to arrive wins, and the access token in memory may not be the one
+ * matching the cookie the browser ends up holding. One promise for all waiters
+ * removes the race entirely, and costs four fewer round trips.
+ *
+ * Note this is not protection against refresh-token reuse: the server issues a
+ * fresh pair on every refresh but keeps no server-side store, so a used refresh
+ * token stays valid until it expires. What bounds that is the server re-reading
+ * the user and organization on each refresh, so a suspended tenant loses its
+ * sessions within one access-token lifetime.
  */
 let refreshInFlight: Promise<string> | null = null;
 
@@ -152,3 +161,20 @@ export const patch = <T>(url: string, data?: unknown) =>
     request<T>({ method: "PATCH", url, data });
 
 export const del = <T>(url: string) => request<T>({ method: "DELETE", url });
+
+/**
+ * Fetches a file rather than JSON — used for the invoice PDF.
+ *
+ * It goes through the same axios instance on purpose, so the request carries
+ * the Authorization header and gets the same 401-refresh-retry treatment as
+ * everything else. A plain `<a href>` would skip both: the access token lives
+ * in memory, not in a cookie, so an unauthenticated link would simply 401.
+ */
+export const getBlob = async (url: string): Promise<Blob> => {
+    const res = await api.request<Blob>({
+        method: "GET",
+        url,
+        responseType: "blob",
+    });
+    return res.data;
+};

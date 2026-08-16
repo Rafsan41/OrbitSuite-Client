@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { use } from "react";
+import { InvoiceDownloadButton } from "@/components/invoice-download-button";
 import { DefinitionRow, PageHeader } from "@/components/patterns";
 import { ErrorState, LoadingState } from "@/components/states";
 import { StatusBadge } from "@/components/status-badge";
@@ -37,6 +38,13 @@ export default function InvoiceDetailPage({
             <PageHeader
                 title={data.invoiceNumber}
                 description={`Issued ${formatDateTime(data.createdAt)}`}
+                action={
+                    <InvoiceDownloadButton
+                        paymentId={data.id}
+                        invoiceNumber={data.invoiceNumber}
+                        size="default"
+                    />
+                }
             />
 
             <div className="mb-4 grid gap-4 lg:grid-cols-2">
