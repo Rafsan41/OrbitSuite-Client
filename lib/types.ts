@@ -132,6 +132,17 @@ export interface OrganizationDetail {
 }
 
 /**
+ * A ledger row from `/transactions` or `/transactions/all`. The joined payment
+ * carries the currency — the transaction table itself has no currency column,
+ * so an amount is only ever meaningful alongside its payment.
+ */
+export interface LedgerTransaction extends OrganizationTransaction {
+    /** Present only on `/transactions/all`, which is the cross-tenant view. */
+    organization?: { id: string; name: string };
+    payment: { id: string; status: PaymentStatus; currency: string } | null;
+}
+
+/**
  * Transactions as the organization detail endpoint returns them — raw rows, so
  * `metadata` rather than the derived `description` the transactions module adds.
  */
@@ -186,6 +197,71 @@ export interface Transaction {
     description?: string | null;
     createdAt: string;
     organization?: Pick<Organization, "id" | "name"> | null;
+}
+
+/** `GET /organizations/me` — the Org Admin's own organization. */
+export interface MyOrganization {
+    id: string;
+    name: string;
+    contactEmail: string | null;
+    billingEmail: string | null;
+    status: OrgStatus;
+    createdAt: string;
+    subscription: { status: SubscriptionStatus; plan: Plan } | null;
+    _count: { users: number };
+}
+
+/** `GET /subscriptions/me` — the raw row plus two fields derived server-side. */
+export interface CurrentSubscription {
+    id: string;
+    status: SubscriptionStatus;
+    currentPeriodEnd: string | null;
+    stripeSubscriptionId: string | null;
+    createdAt: string;
+    plan: Plan;
+    organization: { name: string; status: OrgStatus };
+    /** Negative once the period has already ended. */
+    daysUntilRenewal: number | null;
+    isExpired: boolean;
+}
+
+/** `GET /payments` — billing history for the caller's own organization. */
+export interface PaymentListRow {
+    id: string;
+    amountCents: number;
+    currency: string;
+    status: PaymentStatus;
+    createdAt: string;
+    subscription: {
+        id: string;
+        status: SubscriptionStatus;
+        plan: { name: string; billingInterval: "MONTH" | "YEAR" };
+    } | null;
+    transactions: { id: string; type: string; status: TransactionStatus }[];
+}
+
+/**
+ * `GET /payments/:id` — the data an invoice would be rendered from. The PDF
+ * itself is a listed bonus in the brief and is deliberately not implemented.
+ */
+export interface InvoiceDetail {
+    id: string;
+    invoiceNumber: string;
+    amountCents: number;
+    currency: string;
+    status: PaymentStatus;
+    createdAt: string;
+    stripePaymentIntentId: string | null;
+    organization: {
+        name: string;
+        billingEmail: string | null;
+        contactEmail: string | null;
+    };
+    subscription: {
+        currentPeriodEnd: string | null;
+        plan: { name: string; priceCents: number; billingInterval: "MONTH" | "YEAR" };
+    } | null;
+    transactions: OrganizationTransaction[];
 }
 
 /** The plan fields checkout returns — a `select`, not a whole `Plan`. */
