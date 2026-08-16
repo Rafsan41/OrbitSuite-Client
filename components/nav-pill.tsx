@@ -4,8 +4,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const LOGO_SRC =
-  "https://res.cloudinary.com/drebyi1rz/image/upload/v1786816165/35de1e0d-c0bc-48cf-8064-f567d06edb3d-removebg-preview_d6fafk.png";
+/**
+ * Two marks, one per theme. The light logo carries dark ink that disappears
+ * against a dark background, so the swap is a legibility fix rather than a
+ * flourish.
+ *
+ * Both are rendered and toggled with CSS instead of picking one from
+ * `useTheme()`: the theme is only known after hydration, so a JS choice would
+ * flash the wrong mark on first paint. Their intrinsic sizes differ, so each
+ * carries its own — `w-auto` lets each find its width at a shared 36px height.
+ */
+const LOGOS = {
+  light: {
+    src: "https://res.cloudinary.com/drebyi1rz/image/upload/v1786816165/35de1e0d-c0bc-48cf-8064-f567d06edb3d-removebg-preview_d6fafk.png",
+    width: 577,
+    height: 433,
+  },
+  dark: {
+    src: "https://res.cloudinary.com/drebyi1rz/image/upload/v1786840749/c2587ab1-7c8f-4886-8685-038fd88f0d6a_cqbyug.png",
+    width: 900,
+    height: 846,
+  },
+} as const;
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -45,19 +65,33 @@ export function NavPill() {
       <Link
         href="/"
         className="flex items-center gap-2 justify-self-start text-2xl font-bold tracking-tight text-ink no-underline hover:no-underline">
-        {/* The source is 577×433, so it is sized by height and left to find its
-            own width — forcing a square would squash it. `priority` because it
-            sits in the initial viewport on every page and would otherwise pop
-            in after first paint. Decorative: the wordmark beside it already
-            names the link, so an alt here would just repeat it. */}
-        <Image
-          src={LOGO_SRC}
-          alt=""
-          width={577}
-          height={433}
-          priority
-          className="h-9 w-auto"
-        />
+        {/* A fixed 48px slot, wide enough for the wider of the two marks.
+            Each is still sized by height and finds its own width — forcing a
+            square would squash them, and the two differ in aspect — but the
+            slot stops the wordmark sliding sideways when the theme flips.
+
+            `priority` because the logo sits in the initial viewport on every
+            page and would otherwise pop in after first paint. Decorative: the
+            wordmark beside it already names the link, so an alt here would
+            only repeat it. */}
+        <span className="flex h-9 w-12 shrink-0 items-center justify-center">
+          <Image
+            src={LOGOS.light.src}
+            alt=""
+            width={LOGOS.light.width}
+            height={LOGOS.light.height}
+            priority
+            className="h-9 w-auto dark:hidden"
+          />
+          <Image
+            src={LOGOS.dark.src}
+            alt=""
+            width={LOGOS.dark.width}
+            height={LOGOS.dark.height}
+            priority
+            className="hidden h-9 w-auto dark:block"
+          />
+        </span>
         OrbitSuite
       </Link>
 
